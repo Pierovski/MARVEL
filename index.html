@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MARVEL Tracker</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#dc2626">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        textarea::-webkit-scrollbar { width: 6px; }
+        textarea::-webkit-scrollbar-track { background: transparent; }
+        textarea::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        
+        /* Animación suave real para desplegar */
+        .details-panel { 
+            max-height: 0; 
+            overflow: hidden; 
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        .details-panel.open { 
+            max-height: 800px; /* Suficiente para el contenido */
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased selection:bg-red-600 selection:text-white">
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-4">
+                <h1 class="bg-red-600 text-white font-black tracking-tighter px-4 py-1 text-2xl rounded shadow-lg shadow-red-900/20 uppercase">MARVEL</h1>
+                
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500 text-sm"></i>
+                    <input type="text" id="search-input" onkeyup="setSearch(this.value)" placeholder="Buscar misión..." class="bg-slate-950 border border-slate-700 rounded-lg pl-9 pr-3 py-1.5 text-sm text-white focus:border-red-500 focus:outline-none transition-colors w-full md:w-64">
+                </div>
+            </div>
+
+            <div class="bg-slate-950 border border-slate-800 px-5 py-2 rounded-lg text-sm font-medium flex items-center gap-3">
+                <i class="fa-solid fa-crosshairs text-red-500"></i>
+                Progreso Total: <span id="progress-stats" class="text-white font-bold">0 / 0</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-8">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-2 mb-8 flex flex-col lg:flex-row justify-between gap-4 shadow-lg">
+            <div class="flex bg-slate-950 rounded-lg p-1 border border-slate-800/50 w-full lg:w-auto overflow-x-auto">
+                <button onclick="setSaga('all')" id="tab-saga-all" class="whitespace-nowrap flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all">Universo Completo</button>
+                <button onclick="setSaga('Infinito')" id="tab-saga-Infinito" class="whitespace-nowrap flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all">Saga Infinito</button>
+                <button onclick="setSaga('Multiverso')" id="tab-saga-Multiverso" class="whitespace-nowrap flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all">Saga Multiverso</button>
+            </div>
+            <div class="flex gap-2 w-full lg:w-auto justify-end">
+                <button onclick="setStatus('all')" id="btn-status-all" class="px-4 py-2 text-sm font-medium rounded-lg transition-all">Todo</button>
+                <button onclick="setStatus('pending')" id="btn-status-pending" class="px-4 py-2 text-sm font-medium rounded-lg transition-all text-slate-400 hover:text-white">Pendientes</button>
+                <button onclick="setStatus('watched')" id="btn-status-watched" class="px-4 py-2 text-sm font-medium rounded-lg transition-all text-slate-400 hover:text-white">Vistas</button>
+            </div>
+        </div>
+        <section id="movies-container" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></section>
+    </main>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+    
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').then(reg => {
+                    console.log('S.H.I.E.L.D. Service Worker activo.', reg.scope);
+                }).catch(err => {
+                    console.error('Error al registrar el radar:', err);
+                });
+            });
+        }
+    </script>
+</body>
+</html>
