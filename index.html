@@ -11,46 +11,65 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    
     <script src="https://cdn.tailwindcss.com"></script>
     
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: { marvel: 'var(--color-marvel)' },
-                    fontFamily: {
-                        oswald: ['Oswald', 'sans-serif'],
-                        roboto: ['Roboto', 'sans-serif'],
-                    }
+                    colors: { marvel: 'var(--color-marvel)', glow: 'var(--color-glow)' },
+                    fontFamily: { oswald: ['Oswald', 'sans-serif'], roboto: ['Roboto', 'sans-serif'] },
+                    backgroundImage: { 'parallax': "url('https://www.transparenttextures.com/patterns/stardust.png')" }
                 }
             }
         }
     </script>
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root { --color-marvel: #dc2626; }
-        textarea::-webkit-scrollbar { width: 6px; }
-        textarea::-webkit-scrollbar-track { background: transparent; }
-        textarea::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        :root { 
+            --color-marvel: #dc2626; 
+            --color-glow: rgba(220, 38, 38, 0.15);
+        }
+        
+        /* 10. Scrollbar Holográfico */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar-thumb { background: var(--color-marvel); border-radius: 10px; box-shadow: 0 0 15px var(--color-marvel); }
+        textarea::-webkit-scrollbar { width: 4px; }
+        
+        /* 3. Parallax de Fondo */
+        body { background-color: #020617; background-attachment: fixed; }
+        
+        /* 8. Tooltips Tech */
+        .tech-tooltip { position: relative; }
+        .tech-tooltip:hover::after {
+            content: attr(data-tip);
+            position: absolute; bottom: 120%; left: 50%; transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.95); color: #94a3b8; font-size: 0.7rem; font-family: 'Oswald', sans-serif;
+            text-transform: uppercase; letter-spacing: 1px; padding: 4px 8px; border-radius: 4px;
+            border: 1px solid var(--color-marvel); white-space: nowrap; z-index: 50; box-shadow: 0 0 10px var(--color-glow);
+        }
+
         .glass-panel { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .card-glow:hover { box-shadow: 0 0 20px -5px var(--color-marvel); }
+        
+        /* 9. Glow Dinámico */
+        .card-glow { transition: all 0.4s ease; background: linear-gradient(145deg, rgba(15,23,42,1) 0%, rgba(2,6,23,1) 100%); }
+        .card-glow:hover { box-shadow: 0 0 25px -5px var(--color-marvel); border-color: var(--color-marvel); }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-roboto antialiased selection:bg-marvel selection:text-white pb-20 overflow-x-hidden">
+<body class="bg-parallax text-slate-100 min-h-screen font-roboto antialiased selection:bg-marvel selection:text-white pb-20 overflow-x-hidden">
     
-    <header class="border-b border-slate-800 glass-panel sticky top-0 z-40 transition-colors duration-500">
+    <header class="border-b border-slate-800 glass-panel sticky top-0 z-50 transition-colors duration-500">
         <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-4">
-                <h1 class="font-oswald bg-marvel text-white font-bold tracking-wider px-4 py-1 text-2xl rounded shadow-lg uppercase transition-colors duration-500">MARVEL</h1>
+                <h1 class="font-oswald bg-marvel text-white font-bold tracking-wider px-4 py-1 text-2xl rounded shadow-[0_0_15px_var(--color-glow)] uppercase transition-all duration-500">MARVEL</h1>
             </div>
             <div class="flex flex-wrap gap-2 justify-center">
                 <div class="bg-slate-900 border border-slate-700 px-4 py-1.5 rounded-lg text-xs font-medium flex items-center gap-2">
-    <i class="fa-solid fa-crosshairs text-marvel transition-colors duration-500"></i>
-    <span id="stats-label" class="text-slate-400 uppercase tracking-wide">Progreso Total</span>: <span id="progress-stats" class="text-white font-bold font-oswald tracking-wide">0 / 0</span>
-</div>
+                    <i class="fa-solid fa-crosshairs text-marvel transition-colors duration-500"></i>
+                    <span id="stats-label" class="text-slate-400 uppercase tracking-wide">Progreso Total</span>: <span id="progress-stats" class="text-white font-bold font-oswald tracking-wide">0 / 0</span>
+                </div>
                 <div class="bg-slate-900 border border-slate-700 px-4 py-1.5 rounded-lg text-xs font-medium flex items-center gap-2">
                     <i class="fa-regular fa-clock text-blue-400"></i>
                     Tiempo: <span id="time-stats" class="text-white font-bold font-oswald tracking-wide">0h 0m</span>
@@ -59,8 +78,8 @@
         </div>
     </header>
 
-    <main class="max-w-6xl mx-auto px-4 py-6">
-        <div class="glass-panel rounded-xl p-2 mb-6 flex flex-col md:flex-row justify-between items-center gap-4 shadow-xl">
+    <main class="max-w-6xl mx-auto px-4 py-6 relative">
+        <div class="glass-panel rounded-xl p-2 mb-6 flex flex-col md:flex-row justify-between items-center gap-4 shadow-xl sticky top-[76px] z-40 border-t border-slate-700/50">
             <div class="flex bg-slate-950 rounded-lg p-1 border border-slate-800/50 w-full md:w-auto">
                 <button onclick="App.setSaga('all')" id="tab-saga-all" class="font-oswald flex-1 px-4 py-2 text-sm uppercase tracking-wide rounded-md transition-all">Universo Completo</button>
                 <button onclick="App.setSaga('Infinito')" id="tab-saga-Infinito" class="font-oswald flex-1 px-4 py-2 text-sm uppercase tracking-wide rounded-md transition-all">Saga Infinito</button>
@@ -83,7 +102,7 @@
         <section id="movies-container" class="grid grid-cols-1 lg:grid-cols-2 gap-6"></section>
     </main>
 
-    <button onclick="App.toggleInventory()" class="fixed bottom-6 right-6 z-50 bg-amber-500 hover:bg-amber-400 text-slate-900 w-14 h-14 rounded-full shadow-[0_0_20px_rgba(245,158,11,0.6)] flex items-center justify-center text-xl transition-all hover:scale-110 active:scale-95 border-2 border-amber-300">
+    <button onclick="App.toggleInventory()" data-tip="Bóveda de Artefactos" class="tech-tooltip fixed bottom-6 right-6 z-50 bg-amber-500 hover:bg-amber-400 text-slate-900 w-14 h-14 rounded-full shadow-[0_0_20px_rgba(245,158,11,0.6)] flex items-center justify-center text-xl transition-all hover:scale-110 active:scale-95 border-2 border-amber-300">
         <i class="fa-solid fa-vault"></i>
     </button>
 

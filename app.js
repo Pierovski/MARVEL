@@ -11,7 +11,6 @@ const Storage = {
 const State = {
     filters: { status: 'all', saga: 'all', sort: 'narrative' },
     data: { watched: [], notes: {}, ratings: {} },
-    
     init() {
         this.data.watched = Storage.load('watched', []);
         this.data.notes = Storage.load('notes', {});
@@ -31,24 +30,15 @@ const UI = {
     },
 
     updateStats() {
-        // 1. Filtrar las películas según la saga actual
         const currentSagaMovies = marvelDataset.filter(m => State.filters.saga === 'all' || m.saga === State.filters.saga);
         const totalInSaga = currentSagaMovies.length;
-        
-        // 2. Contar cuántas de ESA saga están marcadas como vistas
         const watchedInSaga = currentSagaMovies.filter(m => State.data.watched.includes(m.id));
         const watchedCount = watchedInSaga.length;
 
-        // 3. Actualizar la etiqueta visual (Textos limpios, sin paréntesis)
-        const labels = {
-            'all': 'Progreso Total',
-            'Infinito': 'Progreso Infinito',
-            'Multiverso': 'Progreso Multiverso'
-        };
+        const labels = { 'all': 'Progreso Total', 'Infinito': 'Progreso Infinito', 'Multiverso': 'Progreso Multiverso' };
         document.getElementById('stats-label').innerText = labels[State.filters.saga];
         document.getElementById('progress-stats').innerText = `${watchedCount} / ${totalInSaga}`;
         
-        // 4. Calcular el tiempo invertido solo de esa selección
         let totalMins = watchedInSaga.reduce((acc, movie) => {
             if (movie.type.includes('Serie')) {
                 return acc + ((parseInt(movie.duration) || 0) * 45); 
@@ -66,7 +56,7 @@ const UI = {
         ['all', 'Infinito', 'Multiverso'].forEach(s => {
             const btn = document.getElementById(`tab-saga-${s}`);
             btn.className = (s === State.filters.saga) 
-                ? "font-oswald flex-1 px-4 py-2 text-sm uppercase tracking-wide font-bold rounded-md transition-all bg-marvel text-white shadow-[0_0_15px_rgba(220,38,38,0.4)] duration-500"
+                ? "font-oswald flex-1 px-4 py-2 text-sm uppercase tracking-wide font-bold rounded-md transition-all bg-marvel text-white shadow-[0_0_15px_var(--color-glow)] duration-500"
                 : "font-oswald flex-1 px-4 py-2 text-sm uppercase tracking-wide rounded-md transition-all text-slate-400 hover:bg-slate-800 hover:text-white";
         });
 
@@ -91,22 +81,20 @@ const UI = {
         if(isWatched) {
             card.classList.add('border-emerald-500/40', 'opacity-90');
             card.classList.remove('border-slate-700');
-            btnWatch.className = "flex items-center justify-center w-12 h-12 rounded-full border-2 transition-all shadow-md hover:scale-105 bg-emerald-500/20 border-emerald-500 text-emerald-400";
-            iconWatch.className = "fa-solid fa-xl fa-check";
+            btnWatch.className = "tech-tooltip flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 transition-all shadow-md hover:scale-105 bg-emerald-500/20 border-emerald-500 text-emerald-400";
+            iconWatch.className = "fa-solid sm:fa-xl fa-check";
             if(spoilerOverlay) spoilerOverlay.classList.add('hidden');
             if(detailsContainer) detailsContainer.classList.remove('opacity-30', 'pointer-events-none', 'select-none');
         } else {
             card.classList.remove('border-emerald-500/40', 'opacity-90');
             card.classList.add('border-slate-700');
-            btnWatch.className = "flex items-center justify-center w-12 h-12 rounded-full border-2 transition-all shadow-md hover:scale-105 bg-slate-900 border-slate-700 text-slate-400 hover:border-marvel hover:text-marvel";
-            iconWatch.className = "fa-solid fa-xl fa-power-off";
+            btnWatch.className = "tech-tooltip flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 transition-all shadow-md hover:scale-105 bg-slate-900 border-slate-700 text-slate-400 hover:border-marvel hover:text-marvel";
+            iconWatch.className = "fa-solid sm:fa-xl fa-power-off";
             if(spoilerOverlay) spoilerOverlay.classList.remove('hidden');
             if(detailsContainer) detailsContainer.classList.add('opacity-30', 'pointer-events-none', 'select-none');
         }
 
-        if(State.filters.status !== 'all') {
-            this.renderGrid();
-        }
+        if(State.filters.status !== 'all') this.renderGrid();
     },
 
     renderGrid() {
@@ -122,18 +110,11 @@ const UI = {
             return matchStatus && matchSaga;
         });
 
-        if (State.filters.sort === 'release') {
-            filtered.sort((a, b) => a.releaseIndex - b.releaseIndex);
-        } else {
-            filtered.sort((a, b) => a.chronoIndex - b.chronoIndex);
-        }
+        if (State.filters.sort === 'release') filtered.sort((a, b) => a.releaseIndex - b.releaseIndex);
+        else filtered.sort((a, b) => a.chronoIndex - b.chronoIndex);
 
         if (filtered.length === 0) {
-            container.innerHTML = `
-                <div class="col-span-full text-center py-20 text-slate-500 border border-dashed border-slate-800 rounded-xl bg-slate-900/30 glass-panel">
-                    <i class="fa-solid fa-satellite-dish text-5xl mb-4 block opacity-40"></i>
-                    <p class="font-oswald text-xl tracking-wide uppercase">El radar no detecta producciones en esta configuración.</p>
-                </div>`;
+            container.innerHTML = `<div class="col-span-full text-center py-20 text-slate-500 border border-dashed border-slate-800 rounded-xl bg-slate-900/30 glass-panel"><i class="fa-solid fa-satellite-dish text-5xl mb-4 block opacity-40"></i><p class="font-oswald text-xl tracking-wide uppercase">El radar no detecta producciones.</p></div>`;
             return;
         }
 
@@ -145,42 +126,42 @@ const UI = {
             
             let starsHTML = '';
             for(let i=1; i<=5; i++) {
-                starsHTML += `<i class="fa-star ${i <= userRating ? 'fa-solid text-amber-400' : 'fa-regular text-slate-600'} cursor-pointer hover:text-amber-300 transition-colors" onclick="event.stopPropagation(); App.rateMovie('${movie.id}', ${i})"></i>`;
+                starsHTML += `<i data-tip="${i} Estrella${i>1?'s':''}" class="tech-tooltip fa-star ${i <= userRating ? 'fa-solid text-amber-400' : 'fa-regular text-slate-600'} cursor-pointer hover:text-amber-300 transition-colors" onclick="event.stopPropagation(); App.rateMovie('${movie.id}', ${i})"></i>`;
             }
 
             const card = document.createElement('div');
             card.id = `card-${movie.id}`;
-            card.className = `movie-card flex flex-col border rounded-xl overflow-hidden bg-gradient-to-br from-slate-900 to-slate-950 transition-all duration-500 card-glow shadow-xl ${isWatched ? 'border-emerald-500/40 opacity-90' : 'border-slate-700'}`;
+            card.className = `movie-card flex flex-col border rounded-xl overflow-hidden transition-all duration-500 card-glow shadow-xl ${isWatched ? 'border-emerald-500/40 opacity-90' : 'border-slate-700 bg-slate-950/50 backdrop-blur-sm'}`;
             
             card.innerHTML = `
-                <div class="p-6 cursor-pointer hover:bg-slate-800/60 transition-colors group relative" onclick="App.toggleDetails('${movie.id}')">
+                <div class="p-5 sm:p-6 cursor-pointer hover:bg-slate-800/30 transition-colors group relative" onclick="App.toggleDetails('${movie.id}')">
                     <div class="flex justify-between items-start gap-4">
                         <div class="flex-grow z-10">
                             <div class="flex flex-wrap gap-2 mb-3">
-                                <span class="text-[10px] font-bold uppercase tracking-wider text-amber-500 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded shadow-sm">${this.escapeHTML(movie.phase)}</span>
-                                <span class="text-[10px] font-bold uppercase tracking-wider text-cyan-400 bg-cyan-400/10 border border-cyan-400/20 px-2 py-0.5 rounded flex items-center gap-1 shadow-sm">
+                                <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-amber-500 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded shadow-sm">${this.escapeHTML(movie.phase)}</span>
+                                <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-cyan-400 bg-cyan-400/10 border border-cyan-400/20 px-2 py-0.5 rounded flex items-center gap-1 shadow-sm">
                                     <i class="fa-solid ${movie.type.includes('Serie') ? 'fa-tv' : 'fa-film'}"></i> ${this.escapeHTML(movie.type)}
                                 </span>
                             </div>
-                            <h3 class="font-oswald text-2xl font-bold text-slate-100 leading-tight group-hover:text-marvel transition-colors duration-300 uppercase">${this.escapeHTML(movie.title)}</h3>
-                            <div class="flex flex-wrap gap-4 mt-3">
-                                <p class="text-xs font-medium text-slate-400"><i class="fa-regular fa-clock text-emerald-500 mr-1"></i> ${movie.duration}</p>
-                                <p class="text-xs font-medium text-slate-400"><i class="fa-solid fa-location-crosshairs text-blue-400 mr-1"></i> ${this.escapeHTML(movie.setting)}</p>
+                            <h3 class="font-oswald text-xl sm:text-2xl font-bold text-slate-100 leading-tight group-hover:text-marvel transition-colors duration-300 uppercase">${this.escapeHTML(movie.title)}</h3>
+                            <div class="flex flex-wrap gap-3 sm:gap-4 mt-3">
+                                <p class="text-[11px] sm:text-xs font-medium text-slate-400"><i class="fa-regular fa-clock text-emerald-500 mr-1"></i> ${movie.duration}</p>
+                                <p class="text-[11px] sm:text-xs font-medium text-slate-400"><i class="fa-solid fa-location-crosshairs text-blue-400 mr-1"></i> ${this.escapeHTML(movie.setting)}</p>
                             </div>
                         </div>
                         
-                        <div class="flex flex-col items-end gap-4 shrink-0 z-10">
-                            <button id="btn-watch-${movie.id}" onclick="event.stopPropagation(); App.toggleWatched('${movie.id}')" class="flex items-center justify-center w-12 h-12 rounded-full border-2 transition-all shadow-md hover:scale-105 ${isWatched ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-marvel hover:text-marvel'}">
-                                <i id="icon-watch-${movie.id}" class="fa-solid fa-xl ${isWatched ? 'fa-check' : 'fa-power-off'}"></i>
+                        <div class="flex flex-col items-end gap-3 shrink-0 z-10">
+                            <button data-tip="${isWatched ? 'Desmarcar' : 'Marcar Vista'}" id="btn-watch-${movie.id}" onclick="event.stopPropagation(); App.toggleWatched('${movie.id}')" class="tech-tooltip flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 transition-all shadow-md hover:scale-105 ${isWatched ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-marvel hover:text-marvel'}">
+                                <i id="icon-watch-${movie.id}" class="fa-solid sm:fa-xl ${isWatched ? 'fa-check' : 'fa-power-off'}"></i>
                             </button>
                             <div class="bg-slate-800/50 rounded-full w-8 h-8 flex items-center justify-center border border-slate-700/50">
-                                <i id="icon-expand-${movie.id}" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300"></i>
+                                <i id="icon-expand-${movie.id}" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300 text-sm"></i>
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <div id="details-${movie.id}" class="hidden border-t border-slate-800/80 bg-slate-950/80 relative">
+                <div id="details-${movie.id}" class="hidden border-t border-slate-800/80 bg-slate-950/90 relative w-full">
                     <div class="bg-blue-900/10 border-b border-blue-500/20 p-4 px-6 flex items-start gap-3">
                         <i class="fa-solid fa-timeline text-blue-400 mt-1"></i>
                         <p class="text-sm text-blue-100/80 leading-relaxed"><strong class="text-blue-400 font-oswald uppercase tracking-wide">Línea Temporal:</strong> ${this.escapeHTML(movie.timelineReason)}</p>
@@ -195,12 +176,15 @@ const UI = {
                         
                         <div id="details-container-${movie.id}" class="${!isWatched ? 'opacity-30 pointer-events-none select-none' : ''} transition-opacity duration-500">
                             <div>
-                                <h4 class="font-oswald text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">Sinopsis de Archivo</h4>
+                                <h4 class="font-oswald text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">Sinopsis / Expediente</h4>
                                 <p class="text-sm text-slate-300 leading-relaxed">${this.escapeHTML(movie.summary)}</p>
                             </div>
 
                             <div class="bg-slate-900/80 rounded-lg p-4 border-l-4 border-marvel transition-colors duration-300 mt-5 shadow-inner">
-                                <p class="text-sm text-slate-300 leading-relaxed"><i class="fa-solid fa-circle-exclamation text-marvel mr-2"></i> ${this.escapeHTML(movie.preData)}</p>
+                                <p class="text-sm text-slate-300 leading-relaxed">
+                                    <strong class="font-oswald uppercase tracking-wide text-marvel"><i class="fa-solid fa-circle-exclamation mr-1"></i> Recomendación Nivel 7:</strong><br>
+                                    ${this.escapeHTML(movie.preData)}
+                                </p>
                             </div>
                             
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between bg-slate-900 rounded-lg p-4 border border-slate-800 mt-5 gap-3">
@@ -209,23 +193,25 @@ const UI = {
                             </div>
                             
                             <div class="bg-slate-900/50 rounded-lg p-4 border border-slate-800/50 mt-5">
-                                <h4 class="font-oswald text-sm font-bold text-purple-400 uppercase tracking-wide mb-3"><i class="fa-solid fa-eye-low-vision mr-1"></i> Detalles Nivel 7:</h4>
+                                <h4 class="font-oswald text-sm font-bold text-purple-400 uppercase tracking-wide mb-3"><i class="fa-solid fa-eye-low-vision mr-1"></i> Detalles Ocultos:</h4>
                                 <ul class="text-sm text-slate-400 space-y-2 pl-1">${hiddenList}</ul>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="bg-slate-900/80 border-t border-slate-800 p-5 relative z-20">
+                    <div class="bg-slate-900 border-t border-slate-800 p-5 relative z-20">
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-3">
-                            <label class="font-oswald text-sm font-bold text-slate-400 uppercase tracking-wide"><i class="fa-solid fa-pen-clip mr-1"></i> Diario de Investigación:</label>
+                            <label class="font-oswald text-sm font-bold text-slate-400 uppercase tracking-wide flex items-center gap-2">
+                                <i class="fa-solid fa-book-open text-amber-500/70"></i> Libreta de Campo:
+                            </label>
                             <div class="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
-                                <div class="flex gap-1 text-base" title="Califica esta entrega">${starsHTML}</div>
-                                <button id="btn-note-${movie.id}" onclick="App.saveNote('${movie.id}')" class="text-xs font-bold tracking-wide uppercase text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded transition-colors flex items-center gap-2">
+                                <div class="flex gap-1 text-base">${starsHTML}</div>
+                                <button data-tip="Archivar Registro" id="btn-note-${movie.id}" onclick="App.saveNote('${movie.id}')" class="tech-tooltip text-xs font-bold tracking-wide uppercase text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded transition-colors flex items-center gap-2 border border-slate-700 hover:border-slate-500">
                                     <i class="fa-solid fa-floppy-disk"></i> Guardar
                                 </button>
                             </div>
                         </div>
-                        <textarea id="note-${movie.id}" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-4 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-marvel focus:ring-1 focus:ring-marvel transition-all resize-y min-h-[100px]" placeholder="Añade tus teorías o análisis aquí...">${userNote}</textarea>
+                        <textarea id="note-${movie.id}" class="w-full bg-[#0b1121] border-b-2 border-slate-700 rounded-t p-4 text-sm text-slate-300 placeholder-slate-600 focus:outline-none focus:border-marvel transition-all resize-y min-h-[100px] leading-relaxed shadow-inner" style="background-image: repeating-linear-gradient(transparent, transparent 27px, rgba(255,255,255,0.03) 28px);" placeholder="Registra tus observaciones operativas aquí...">${userNote}</textarea>
                     </div>
                 </div>
             `;
@@ -238,12 +224,7 @@ const UI = {
         const collected = marvelDataset.filter(m => State.data.watched.includes(m.id) && m.keyObject);
         
         if(collected.length === 0) {
-            list.innerHTML = `
-                <div class="col-span-full text-center py-16">
-                    <i class="fa-solid fa-box-open text-6xl text-slate-700 mb-4 block"></i>
-                    <p class="font-oswald text-xl text-slate-500 uppercase tracking-wide">Bóveda Vacía</p>
-                    <p class="text-sm text-slate-600 mt-2">Marca películas como vistas para asegurar artefactos multiversales.</p>
-                </div>`;
+            list.innerHTML = `<div class="col-span-full text-center py-16"><i class="fa-solid fa-box-open text-6xl text-slate-700 mb-4 block"></i><p class="font-oswald text-xl text-slate-500 uppercase tracking-wide">Bóveda Vacía</p><p class="text-sm text-slate-600 mt-2">Marca películas como vistas para asegurar artefactos multiversales.</p></div>`;
             return;
         }
         
@@ -259,7 +240,6 @@ const UI = {
     }
 };
 
-// --- CONTROLADOR PRINCIPAL ---
 const App = {
     init() {
         State.init();
@@ -268,62 +248,47 @@ const App = {
         UI.updateStats();
         UI.renderGrid();
     },
-
     setSaga(saga) { 
         State.filters.saga = saga; 
         const root = document.documentElement;
-        
-        if (saga === 'Infinito') root.style.setProperty('--color-marvel', '#a855f7');
-        else if (saga === 'Multiverso') root.style.setProperty('--color-marvel', '#10b981');
-        else root.style.setProperty('--color-marvel', '#dc2626');
-        
+        if (saga === 'Infinito') {
+            root.style.setProperty('--color-marvel', '#a855f7');
+            root.style.setProperty('--color-glow', 'rgba(168, 85, 247, 0.15)');
+        } else if (saga === 'Multiverso') {
+            root.style.setProperty('--color-marvel', '#10b981');
+            root.style.setProperty('--color-glow', 'rgba(16, 185, 129, 0.15)');
+        } else {
+            root.style.setProperty('--color-marvel', '#dc2626');
+            root.style.setProperty('--color-glow', 'rgba(220, 38, 38, 0.15)');
+        }
         UI.updateNavigationTabs(); 
         UI.renderGrid();
         UI.updateStats(); 
     },
-
-    setStatus(status) { 
-        State.filters.status = status; 
-        UI.updateNavigationTabs(); 
-        UI.renderGrid(); 
-    },
-
-    setSortOrder(order) {
-        State.filters.sort = order;
-        Storage.save('sort', order);
-        UI.renderGrid();
-    },
-
+    setStatus(status) { State.filters.status = status; UI.updateNavigationTabs(); UI.renderGrid(); },
+    setSortOrder(order) { State.filters.sort = order; Storage.save('sort', order); UI.renderGrid(); },
     toggleWatched(id) {
         const index = State.data.watched.indexOf(id);
         if (index === -1) State.data.watched.push(id); 
         else State.data.watched.splice(index, 1);
-        
         Storage.save('watched', State.data.watched);
-        UI.updateStats();
-        UI.updateCardTargeted(id);
+        UI.updateStats(); UI.updateCardTargeted(id);
+        if(navigator.vibrate) navigator.vibrate(50);
     },
-
-    rateMovie(id, rating) {
-        State.data.ratings[id] = rating;
-        Storage.save('ratings', State.data.ratings);
-        UI.renderGrid(); 
-    },
-
+    rateMovie(id, rating) { State.data.ratings[id] = rating; Storage.save('ratings', State.data.ratings); UI.renderGrid(); },
     saveNote(id) {
         const textarea = document.getElementById(`note-${id}`);
         const noteText = textarea.value.trim();
-        
         if (noteText === '') delete State.data.notes[id]; 
         else State.data.notes[id] = noteText;
-        
         Storage.save('notes', State.data.notes);
         
         const btn = document.getElementById(`btn-note-${id}`);
         const originalHTML = btn.innerHTML;
-        btn.innerHTML = '<i class="fa-solid fa-check"></i> Hecho';
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Archivado';
         btn.classList.replace('text-slate-400', 'text-emerald-400');
         btn.classList.add('border-emerald-500/50');
+        if(navigator.vibrate) navigator.vibrate([30, 50, 30]);
         
         setTimeout(() => {
             btn.innerHTML = originalHTML;
@@ -331,11 +296,9 @@ const App = {
             btn.classList.remove('border-emerald-500/50');
         }, 1500);
     },
-
     toggleDetails(id) {
         const detailsDiv = document.getElementById(`details-${id}`);
         const icon = document.getElementById(`icon-expand-${id}`);
-        
         if (detailsDiv.classList.contains('hidden')) {
             detailsDiv.classList.remove('hidden');
             icon.style.transform = 'rotate(180deg)';
@@ -344,7 +307,6 @@ const App = {
             icon.style.transform = 'rotate(0deg)';
         }
     },
-
     toggleInventory() {
         const modal = document.getElementById('inventory-modal');
         modal.classList.toggle('hidden');
@@ -352,5 +314,4 @@ const App = {
     }
 };
 
-// Arrancar la aplicación al cargar el DOM
 document.addEventListener('DOMContentLoaded', () => App.init());
