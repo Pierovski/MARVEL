@@ -1,188 +1,70 @@
 const marvelDataset = [
-    {
-        id: "iron-man-1", title: "Iron Man", saga: "Infinito", phase: "Arco 1: La Iniciativa", type: "Película", setting: "Año 2008", postCredits: 1,
-        preData: "La piedra angular. Observa el desarrollo tecnológico y la redención del capitalista.",
-        hiddenDetails: ["La corporación Roxxon aparece en un edificio.", "El escudo a medio terminar del Capitán América."],
-        keyObject: "El Reactor Arc"
-    },
-    {
-        id: "iron-man-2", title: "Iron Man 2", saga: "Infinito", phase: "Arco 1: La Iniciativa", type: "Película", setting: "Año 2010", postCredits: 1,
-        preData: "Inicia 'La Gran Semana de Fury'. Ocurre al mismo tiempo que Hulk y Thor.",
-        hiddenDetails: ["En el mapa holográfico hay un marcador en Wakanda (Black Panther)."],
-        keyObject: "Nuevo elemento (Badassium)"
-    },
-    {
-        id: "hulk-1", title: "El Increíble Hulk", saga: "Infinito", phase: "Arco 1: La Iniciativa", type: "Película", setting: "Año 2010", postCredits: 1,
-        preData: "Explora la dualidad y los intentos del gobierno por recrear el suero del Súper Soldado.",
-        hiddenDetails: ["Industrias Stark proporciona la tecnología sónica del ejército."],
-        keyObject: "La sangre de Banner"
-    },
-    {
-        id: "thor-1", title: "Thor", saga: "Infinito", phase: "Arco 1: La Iniciativa", type: "Película", setting: "Año 2011", postCredits: 1,
-        preData: "Introduce la magia como ciencia avanzada y a Loki, el catalizador de los Vengadores.",
-        hiddenDetails: ["Ojo de Halcón hace su primera aparición táctica."],
-        keyObject: "Mjolnir"
-    },
-    {
-        id: "cap-america-1", title: "Capitán América: El Primer Vengador", saga: "Infinito", phase: "Arco 1: La Iniciativa", type: "Película", setting: "1943 - 1945", postCredits: 1,
-        preData: "El cimiento moral del universo. Su sacrificio cierra el arco de la Fase 1.",
-        hiddenDetails: ["Primera aparición del Teseracto (Gema del Espacio)."],
-        keyObject: "El Suero del Súper Soldado"
-    },
-    {
-        id: "avengers-1", title: "The Avengers", saga: "Infinito", phase: "Arco 2: Ensamblaje", type: "Película", setting: "Año 2012", postCredits: 2,
-        preData: "El trauma de esta batalla definirá a Tony Stark por los próximos 10 años.",
-        hiddenDetails: ["Thanos manipula todo desde las sombras por primera vez."],
-        keyObject: "El Cetro de Loki (Gema de la Mente)"
-    },
-    {
-        id: "daredevil-s1", title: "Daredevil (Temp. 1 y 2)", saga: "Infinito", phase: "Arco 2.5: Nivel Callejero", type: "Serie", setting: "Post-2012", postCredits: 0,
-        preData: "Las consecuencias reales de la Batalla de NY. Kingpin se adueña de la reconstrucción.",
-        hiddenDetails: ["La mafia usa contratos de reconstrucción de Industrias Stark."],
-        keyObject: "El traje táctico y Hell's Kitchen"
-    },
-    {
-        id: "winter-soldier", title: "Capitán América: El Soldado de Invierno", saga: "Infinito", phase: "Arco 3: La Caída", type: "Película", setting: "Año 2014", postCredits: 2,
-        preData: "Destruye a SHIELD y expone los secretos del mundo. Espionaje puro.",
-        hiddenDetails: ["Se menciona a Stephen Strange como una amenaza actual."],
-        keyObject: "Helicarriers del Proyecto Insight"
-    },
-    {
-        id: "gotg-1", title: "Guardianes de la Galaxia", saga: "Infinito", phase: "Arco 3: Cósmico", type: "Película", setting: "Año 2014", postCredits: 2,
-        preData: "Corta la tensión terrestre para explicar qué son las Gemas del Infinito.",
-        hiddenDetails: ["El Coleccionista tiene un Elfo Oscuro y un Chitauri encerrados."],
-        keyObject: "El Orbe (Gema del Poder)"
-    },
-    {
-        id: "avengers-2", title: "Avengers: Era de Ultrón", saga: "Infinito", phase: "Arco 4: Milagros", type: "Película", setting: "Año 2015", postCredits: 1,
-        preData: "El miedo de Stark crea un monstruo. Introduce a Wanda Maximoff y a Visión.",
-        hiddenDetails: ["La escena del hacha de Thor presagia su forja de la Stormbreaker en Infinity War."],
-        keyObject: "La cuna de regeneración"
-    },
-    {
-        id: "ant-man-1", title: "Ant-Man", saga: "Infinito", phase: "Arco 4: Milagros", type: "Película", setting: "Año 2015", postCredits: 2,
-        preData: "El puente de calma que introduce el Reino Cuántico, clave para el futuro.",
-        hiddenDetails: ["Se menciona a 'un tipo que salta y trepa paredes' (Spiderman)."],
-        keyObject: "Las Partículas Pym"
-    },
-    {
-        id: "civil-war", title: "Capitán América: Civil War", saga: "Infinito", phase: "Arco 5: Fractura", type: "Película", setting: "Año 2016", postCredits: 2,
-        preData: "Pierden contra Thanos porque aquí se dividen. Introduce a Black Panther y Spiderman.",
-        hiddenDetails: ["El vehículo del asesinato en 1991 transportaba suero de súper soldado."],
-        keyObject: "Los Acuerdos de Sokovia"
-    },
-    {
-        id: "spiderman-homecoming", title: "Spider-Man: Homecoming", saga: "Infinito", phase: "Arco 5: Fractura", type: "Película", setting: "Año 2016", postCredits: 2,
-        preData: "Las consecuencias de nivel de calle de la chatarra alienígena. La relación mentor-alumno con Tony Stark.",
-        hiddenDetails: ["El Buitre recolectó tecnología de la Batalla de NY, Sokovia y Lagos."],
-        keyObject: "La tecnología Chitauri modificada"
-    },
-    {
-        id: "black-widow", title: "Black Widow", saga: "Infinito", phase: "Arco 5: Fractura", type: "Película", setting: "Año 2016", postCredits: 1,
-        preData: "REGLA EXPERTA: La película va aquí, pero NO veas la escena post-créditos hasta después de Endgame.",
-        hiddenDetails: ["El chaleco que Yelena compra es el mismo que Natasha usa en Infinity War."],
-        keyObject: "El antídoto rojo"
-    },
-    {
-        id: "black-panther", title: "Black Panther", saga: "Infinito", phase: "Arco 5: Fractura", type: "Película", setting: "Año 2016", postCredits: 2,
-        preData: "Las consecuencias de la muerte de T'Chaka en Civil War y la apertura de Wakanda.",
-        hiddenDetails: ["El escudo de Bucky (Lobo Blanco) se empieza a forjar al final."],
-        keyObject: "La Hierba en forma de Corazón (Vibranium)"
-    },
-    {
-        id: "dr-strange", title: "Doctor Strange", saga: "Infinito", phase: "Arco 6: Magia", type: "Película", setting: "Año 2016-2017", postCredits: 2,
-        preData: "Abre el multiverso mágico y presenta la Gema del Tiempo.",
-        hiddenDetails: ["En el teléfono de Strange antes del choque, le ofrecen el caso del soldado lesionado en Civil War."],
-        keyObject: "El Ojo de Agamotto"
-    },
-    {
-        id: "thor-3", title: "Thor: Ragnarok", saga: "Infinito", phase: "Arco 6: Magia", type: "Película", setting: "Año 2017", postCredits: 2,
-        preData: "Destruye Asgard para que Thor no tenga hogar en Infinity War. La post-créditos es el inicio directo de Thanos.",
-        hiddenDetails: ["El Guantelete del Infinito de Odín se revela como falso."],
-        keyObject: "La Llama Eterna"
-    },
-    {
-        id: "infinity-war", title: "Avengers: Infinity War", saga: "Infinito", phase: "Arco 7: Clímax", type: "Película", setting: "Año 2018", postCredits: 1,
-        preData: "Thanos es el protagonista. Los héroes fallan por negarse a sacrificar vidas.",
-        hiddenDetails: ["Cráneo Rojo reaparece como guardián de Vormir."],
-        keyObject: "El Guantelete del Infinito"
-    },
-    {
-        id: "ant-man-2", title: "Ant-Man and The Wasp", saga: "Infinito", phase: "Arco 7: Clímax", type: "Película", setting: "Año 2018", postCredits: 2,
-        preData: "Muestra qué pasaba con ellos durante Infinity War. La post-créditos es un golpe durísimo.",
-        hiddenDetails: ["El túnel cuántico será la única salvación futura."],
-        keyObject: "El Túnel Cuántico móvil"
-    },
-    {
-        id: "captain-marvel", title: "Capitana Marvel", saga: "Infinito", phase: "Arco 7: Clímax", type: "Película", setting: "Año 1995", postCredits: 2,
-        preData: "Precuela cronológica. REGLA EXPERTA: Verla aquí para mantener el misterio de Fury y el origen del nombre 'Avengers'.",
-        hiddenDetails: ["El nombre del proyecto 'Iniciativa Vengadores' proviene de la nave de Carol."],
-        keyObject: "El Buscapersonas modificado"
-    },
-    {
-        id: "endgame", title: "Avengers: Endgame", saga: "Infinito", phase: "Arco 7: Clímax", type: "Película", setting: "Año 2018 - 2023", postCredits: 0,
-        preData: "El cierre magistral. No alteran el pasado, crean ramas temporales.",
-        hiddenDetails: ["El sonido final sin video es el martilleo de Tony en la primera película."],
-        keyObject: "El Guantelete de Stark"
-    },
-    {
-        id: "spiderman-far-from-home", title: "Spider-Man: Far From Home", saga: "Infinito", phase: "Arco 7: Epílogo", type: "Película", setting: "Año 2024", postCredits: 2,
-        preData: "El verdadero final de la Saga del Infinito. El mundo post-Blip y el legado de Tony.",
-        hiddenDetails: ["Mysterio y su equipo son exempleados rencorosos de Industrias Stark."],
-        keyObject: "Gafas EDITH"
-    },
-    {
-        id: "wandavision", title: "WandaVision", saga: "Multiverso", phase: "Arco 1: El Luto", type: "Serie", setting: "Año 2023", postCredits: 3,
-        preData: "El trauma no procesado de Wanda altera la realidad. Fundamental para Doctor Strange 2.",
-        hiddenDetails: ["Los comerciales de televisión representan traumas del pasado de Wanda."],
-        keyObject: "El Darkhold"
-    },
-    {
-        id: "loki-s1-2", title: "Loki (Temp. 1 y 2)", saga: "Multiverso", phase: "Arco 2: Caos Temporal", type: "Serie", setting: "Fuera del Tiempo", postCredits: 1,
-        preData: "Explica mecánicamente cómo funciona el multiverso y libera las líneas temporales.",
-        hiddenDetails: ["Aquel que Permanece orquestó silenciosamente toda la Saga del Infinito."],
-        keyObject: "El Telar Temporal"
-    },
-    {
-        id: "spiderman-nwh", title: "Spider-Man: No Way Home", saga: "Multiverso", phase: "Arco 2: Colisión", type: "Película", setting: "Año 2024", postCredits: 2,
-        preData: "El colapso multiversal. Peter asume las consecuencias de la magia irresponsable.",
-        hiddenDetails: ["Aparición de Matt Murdock (Daredevil) confirmando el nivel callejero."],
-        keyObject: "La Macchina de Kadavus"
-    },
-        {
-        id: "dr-strange-2", title: "Doctor Strange en el Multiverso de la Locura", saga: "Multiverso", phase: "Arco 2: Colisión", type: "Película", setting: "Año 2024", postCredits: 2,
-        preData: "Consecuencia directa de WandaVision. Muestra lo peligroso que es viajar entre universos (Incursiones).",
-        hiddenDetails: ["La aparición de los Illuminati confirma que los universos de Fox (X-Men) y Marvel coexisten.", "El Darkhold corrompe a quien lo usa, igual que en Agents of SHIELD."],
-        keyObject: "El Libro de los Vishanti"
-    },
-    {
-        id: "shang-chi", title: "Shang-Chi y la Leyenda de los Diez Anillos", saga: "Multiverso", phase: "Arco 3: Nuevos Pilares", type: "Película", setting: "Año 2024", postCredits: 2,
-        preData: "Expande el lado místico/alienígena y reconecta con la organización terrorista de la primera película de Iron Man.",
-        hiddenDetails: ["Se ve a Wong peleando con Abominación (villano de El Increíble Hulk) en el club de pelea."],
-        keyObject: "Los Diez Anillos"
-    },
-    {
-        id: "black-panther-2", title: "Black Panther: Wakanda Forever", saga: "Multiverso", phase: "Arco 3: Nuevos Pilares", type: "Película", setting: "Año 2025", postCredits: 1,
-        preData: "Un cierre emocional por la pérdida de Chadwick Boseman. Introduce a los mutantes con Namor.",
-        hiddenDetails: ["La directora de la CIA, Val, sigue reclutando personajes en las sombras para su propio equipo (Thunderbolts)."],
-        keyObject: "El Vibranium Submarino"
-    },
-    {
-        id: "ant-man-3", title: "Ant-Man and The Wasp: Quantumania", saga: "Multiverso", phase: "Arco 4: Dinastía", type: "Película", setting: "Año 2026", postCredits: 2,
-        preData: "Presenta la amenaza física de Kang el Conquistador y el Consejo de Kangs.",
-        hiddenDetails: ["Los anillos tecnológicos del núcleo de la nave de Kang comparten el mismo diseño visual que los Diez Anillos de Shang-Chi."],
-        keyObject: "El Núcleo de Energía Multiversal"
-    },
-    {
-        id: "gotg-3", title: "Guardianes de la Galaxia Vol. 3", saga: "Multiverso", phase: "Arco 5: Despedidas", type: "Película", setting: "Año 2026", postCredits: 2,
-        preData: "El final definitivo del equipo original. No trata sobre el multiverso, trata sobre sanar traumas del pasado.",
-        hiddenDetails: ["Phyla-Vell (una de las niñas rescatadas al final) es una de las heroínas cósmicas más poderosas en los cómics."],
-        keyObject: "El código de anulación de Rocket"
-    },
-    {
-        id: "deadpool-3", title: "Deadpool & Wolverine", saga: "Multiverso", phase: "Arco 6: El Ancla", type: "Película", setting: "Año 2024 / Vacío Temporal", postCredits: 1,
-        preData: "Crucial. Conecta oficialmente el universo extinto de Fox (X-Men) con el UCM e introduce el concepto del 'Ser Ancla'.",
-        hiddenDetails: ["El logo de 20th Century Fox está destruido en el fondo del Vacío.", "Múltiples referencias directas a Loki y la Autoridad de Variación Temporal (TVA)."],
-        keyObject: "El Crono-Rastreador de la TVA"
-    } 
+    // SAGA DEL INFINITO
+    { id: "cap-america-1", chronoIndex: 1, releaseIndex: 5, title: "Capitán América: El Primer Vengador", saga: "Infinito", phase: "Arco 1: La Iniciativa", type: "Película", setting: "1943 - 1945", postCredits: 1, duration: "2h 4m", summary: "Steve Rogers, un joven frágil pero valiente, acepta un suero experimental...", preData: "El cimiento moral del universo.", hiddenDetails: ["Primera aparición del Teseracto."], keyObject: "El Suero del Súper Soldado", timelineReason: "Ocurre en la década de los 40.", postCreditDesc: "1 Fundamental.", releaseDate: "2011-07-22" },
+    { id: "corto-agent-carter", chronoIndex: 2, releaseIndex: 9, title: "Marvel One-Shot: Agent Carter", saga: "Infinito", phase: "Arco 1: La Iniciativa", type: "Cortometraje", setting: "Año 1946", postCredits: 1, duration: "15m", summary: "Peggy Carter, marginada en la oficina, asume una misión...", preData: "El puente directo entre el Capitán América y la fundación de S.H.I.E.L.D.", hiddenDetails: ["Howard Stark la invita a codirigir."], keyObject: "El Suero Zodiac", timelineReason: "Continuación inmediata tras el congelamiento.", postCreditDesc: "1 Cómica.", releaseDate: "2013-09-03" },
+    { id: "cap-marvel", chronoIndex: 3, releaseIndex: 21, title: "Capitana Marvel", saga: "Infinito", phase: "Arco 8: Orígenes", type: "Película", setting: "Año 1995", postCredits: 2, duration: "2h 3m", summary: "Una guerrera Kree amnésica cae a la Tierra en 1995...", preData: "Se ve aquí para mantener el misterio intacto.", hiddenDetails: ["El Proyecto Pegaso."], keyObject: "El buscapersonas", timelineReason: "Ambientada en los 90s.", postCreditDesc: "1 Fundamental, 1 Cómica.", releaseDate: "2019-03-08" },
+    { id: "iron-man-1", chronoIndex: 4, releaseIndex: 1, title: "Iron Man", saga: "Infinito", phase: "Arco 1: La Iniciativa", type: "Película", setting: "Año 2008", postCredits: 1, duration: "2h 6m", summary: "Tony Stark, un genio, es secuestrado...", preData: "La piedra angular.", hiddenDetails: ["La corporación Roxxon.", "El escudo a medio terminar."], keyObject: "El Reactor Arc", timelineReason: "El inicio de la era moderna.", postCreditDesc: "1 Fundamental.", releaseDate: "2008-05-02" },
+    { id: "iron-man-2", chronoIndex: 5, releaseIndex: 3, title: "Iron Man 2", saga: "Infinito", phase: "Arco 1: La Iniciativa", type: "Película", setting: "Año 2010", postCredits: 1, duration: "2h 4m", summary: "Con el mundo consciente de su identidad...", preData: "Inicia 'La Gran Semana de Fury'.", hiddenDetails: ["Marcador en Wakanda."], keyObject: "Nuevo elemento", timelineReason: "Pasan 6 meses desde Iron Man 1.", postCreditDesc: "1 Fundamental.", releaseDate: "2010-05-07" },
+    { id: "corto-funny-thing", chronoIndex: 6, releaseIndex: 6, title: "Marvel One-Shot: Algo gracioso ocurrió...", saga: "Infinito", phase: "Arco 1: La Iniciativa", type: "Cortometraje", setting: "Año 2010", postCredits: 0, duration: "4m", summary: "De camino a Nuevo México, Coulson detiene un robo.", preData: "Muestra lo entrenados que están los agentes.", hiddenDetails: ["Ocurre durante Iron Man 2."], keyObject: "Los pastelitos", timelineReason: "Ocurre durante Iron Man 2.", postCreditDesc: "Sin escenas.", releaseDate: "2011-09-13" },
+    { id: "thor-1", chronoIndex: 7, releaseIndex: 4, title: "Thor", saga: "Infinito", phase: "Arco 1: La Iniciativa", type: "Película", setting: "Año 2011", postCredits: 1, duration: "1h 55m", summary: "El dios del trueno es desterrado a la Tierra.", preData: "Introduce la magia como ciencia y a Loki.", hiddenDetails: ["Ojo de Halcón."], keyObject: "Mjolnir", timelineReason: "Segunda parte de la Gran Semana.", postCreditDesc: "1 Fundamental.", releaseDate: "2011-05-06" },
+    { id: "hulk-1", chronoIndex: 8, releaseIndex: 2, title: "El Increíble Hulk", saga: "Infinito", phase: "Arco 1: La Iniciativa", type: "Película", setting: "Año 2010", postCredits: 1, duration: "1h 52m", summary: "Bruce Banner busca desesperadamente una cura.", preData: "Explora los intentos del gobierno.", hiddenDetails: ["Industrias Stark."], keyObject: "La sangre de Banner", timelineReason: "Tercera parte de la Gran Semana.", postCreditDesc: "1 Fundamental.", releaseDate: "2008-06-13" },
+    { id: "corto-consultant", chronoIndex: 9, releaseIndex: 7, title: "Marvel One-Shot: El Consultor", saga: "Infinito", phase: "Arco 1: La Iniciativa", type: "Cortometraje", setting: "Año 2011", postCredits: 0, duration: "4m", summary: "Coulson y Sitwell planean cómo sabotear una orden.", preData: "Resuelve el misterio del final de Hulk.", hiddenDetails: ["Stark fue enviado como 'el consultor'."], keyObject: "El archivo de Abominación", timelineReason: "Días después del final de Hulk.", postCreditDesc: "Sin escenas.", releaseDate: "2011-09-13" },
+    { id: "avengers-1", chronoIndex: 10, releaseIndex: 8, title: "The Avengers", saga: "Infinito", phase: "Arco 2: Ensamblaje", type: "Película", setting: "Año 2012", postCredits: 2, duration: "2h 23m", summary: "Cuando Loki amenaza la Tierra, Fury reúne a los héroes.", preData: "El trauma definirá a Stark.", hiddenDetails: ["Thanos manipula todo."], keyObject: "El Cetro de Loki", timelineReason: "Culminación de toda la Fase 1.", postCreditDesc: "1 Fundamental, 1 Cómica.", releaseDate: "2012-05-04" },
+    { id: "corto-item-47", chronoIndex: 11, releaseIndex: 10, title: "Marvel One-Shot: Artículo 47", saga: "Infinito", phase: "Arco 2: Ensamblaje", type: "Cortometraje", setting: "Año 2012", postCredits: 0, duration: "12m", summary: "Una pareja recupera un arma Chitauri.", preData: "Muestra cómo el mundo real lidia con alienígenas.", hiddenDetails: ["Es el arma de Spiderman Homecoming."], keyObject: "El arma Chitauri", timelineReason: "Días posteriores a la Batalla de NY.", postCreditDesc: "Sin escenas.", releaseDate: "2012-09-25" },
+    { id: "daredevil-s1", chronoIndex: 12, releaseIndex: 14, title: "Daredevil (Temp. 1 y 2)", saga: "Infinito", phase: "Arco 2.5: Nivel Callejero", type: "Serie", setting: "Post-2012", postCredits: 0, duration: "26 Episodios", summary: "Abogado ciego justiciero.", preData: "Consecuencias de la Batalla de NY.", hiddenDetails: ["La mafia de Kingpin usa contratos Stark."], keyObject: "El traje táctico", timelineReason: "Consecuencia directa del desastre en NY.", postCreditDesc: "No aplica.", releaseDate: "2015-04-10" },
+    { id: "iron-man-3", chronoIndex: 13, releaseIndex: 11, title: "Iron Man 3", saga: "Infinito", phase: "Arco 3: Consecuencias", type: "Película", setting: "Año 2012", postCredits: 1, duration: "2h 10m", summary: "Stark lidia con TEPT.", preData: "Muestra el trauma.", hiddenDetails: ["El presidente Ellis."], keyObject: "La armadura Mark 42", timelineReason: "Navidad de 2012.", postCreditDesc: "1 Cómica.", releaseDate: "2013-05-03" },
+    { id: "corto-all-hail", chronoIndex: 14, releaseIndex: 13, title: "Marvel One-Shot: Todos saluden al Rey", saga: "Infinito", phase: "Arco 3: Consecuencias", type: "Cortometraje", setting: "Año 2013", postCredits: 1, duration: "14m", summary: "Entrevista al actor Trevor Slattery.", preData: "Conecta con Shang-Chi.", hiddenDetails: ["Justin Hammer aparece."], keyObject: "El tatuaje", timelineReason: "Tras Iron Man 3.", postCreditDesc: "1 Cómica.", releaseDate: "2014-02-04" },
+    { id: "thor-2", chronoIndex: 15, releaseIndex: 12, title: "Thor: Un Mundo Oscuro", saga: "Infinito", phase: "Arco 3: Consecuencias", type: "Película", setting: "Año 2013", postCredits: 2, duration: "1h 52m", summary: "Una raza regresa para sumir al universo en oscuridad.", preData: "Revela otra Gema.", hiddenDetails: ["El Coleccionista."], keyObject: "El Éter (Gema de Realidad)", timelineReason: "Thor arreglando los nueve reinos.", postCreditDesc: "1 Fundamental, 1 Cómica.", releaseDate: "2013-11-08" },
+    { id: "winter-soldier", chronoIndex: 16, releaseIndex: 15, title: "Capitán América: Soldado de Invierno", saga: "Infinito", phase: "Arco 3: Consecuencias", type: "Película", setting: "Año 2014", postCredits: 2, duration: "2h 16m", summary: "Steve descubre una infiltración masiva.", preData: "Destruye SHIELD.", hiddenDetails: ["Mencionan a Strange."], keyObject: "Helicarriers Insight", timelineReason: "La caída de SHIELD.", postCreditDesc: "1 Fundamental, 1 Teaser.", releaseDate: "2014-04-04" },
+    { id: "gotg-1", chronoIndex: 17, releaseIndex: 16, title: "Guardianes de la Galaxia", saga: "Infinito", phase: "Arco 4: Cósmico", type: "Película", setting: "Año 2014", postCredits: 2, duration: "2h 1m", summary: "Inadaptados espaciales trabajando juntos.", preData: "Explica qué son las Gemas.", hiddenDetails: ["Coleccionista tiene un Elfo."], keyObject: "El Orbe (Gema del Poder)", timelineReason: "2014, cósmico.", postCreditDesc: "1 Fundamental, 1 Cómica.", releaseDate: "2014-08-01" },
+    { id: "gotg-2", chronoIndex: 18, releaseIndex: 18, title: "Guardianes de la Galaxia Vol. 2", saga: "Infinito", phase: "Arco 4: Cósmico", type: "Película", setting: "Año 2014", postCredits: 5, duration: "2h 16m", summary: "El linaje de Peter Quill.", preData: "Celestiales.", hiddenDetails: ["Stan Lee con los Vigilantes."], keyObject: "El núcleo", timelineReason: "Tres meses después del Vol 1.", postCreditDesc: "3 Cómicas, 2 Fundamentales.", releaseDate: "2017-05-05" },
+    { id: "avengers-2", chronoIndex: 19, releaseIndex: 17, title: "Avengers: Era de Ultrón", saga: "Infinito", phase: "Arco 5: Milagros", type: "Película", setting: "Año 2015", postCredits: 1, duration: "2h 21m", summary: "Ultrón, una IA genocida.", preData: "Wanda y Visión.", hiddenDetails: ["El hacha de Thor."], keyObject: "La cuna", timelineReason: "Vengadores operan independientemente.", postCreditDesc: "1 Fundamental.", releaseDate: "2015-05-01" },
+    { id: "ant-man-1", chronoIndex: 20, releaseIndex: 19, title: "Ant-Man", saga: "Infinito", phase: "Arco 5: Milagros", type: "Película", setting: "Año 2015", postCredits: 2, duration: "1h 57m", summary: "Scott Lang.", preData: "El Reino Cuántico.", hiddenDetails: ["Tipo que trepa paredes."], keyObject: "Partículas Pym", timelineReason: "Bases tras Ultrón.", postCreditDesc: "2 Fundamentales.", releaseDate: "2015-07-17" },
+    { id: "civil-war", chronoIndex: 21, releaseIndex: 20, title: "Capitán América: Civil War", saga: "Infinito", phase: "Arco 6: Fractura", type: "Película", setting: "Año 2016", postCredits: 2, duration: "2h 27m", summary: "Registro de Vengadores.", preData: "Se dividen aquí.", hiddenDetails: ["Asesinato en 1991."], keyObject: "Los Acuerdos", timelineReason: "Un año después de Sokovia.", postCreditDesc: "2 Fundamentales.", releaseDate: "2016-05-06" },
+    { id: "black-widow", chronoIndex: 22, releaseIndex: 24, title: "Black Widow", saga: "Infinito", phase: "Arco 6: Fractura", type: "Película", setting: "Año 2016", postCredits: 1, duration: "2h 14m", summary: "Pasado ruso de Natasha.", preData: "No veas la post-créditos hasta Endgame.", hiddenDetails: ["Chaleco de Yelena."], keyObject: "El antídoto", timelineReason: "Directamente tras Civil War.", postCreditDesc: "1 Fundamental.", releaseDate: "2021-07-09" },
+    { id: "spiderman-hc", chronoIndex: 23, releaseIndex: 22, title: "Spider-Man: Homecoming", saga: "Infinito", phase: "Arco 6: Fractura", type: "Película", setting: "Año 2016", postCredits: 2, duration: "2h 13m", summary: "Peter vs Buitre.", preData: "Nivel callejero.", hiddenDetails: ["Buitre roba restos."], keyObject: "Tecnología Chitauri", timelineReason: "Meses tras Civil War.", postCreditDesc: "1 Teaser, 1 Cómica.", releaseDate: "2017-07-07" },
+    { id: "black-panther", chronoIndex: 24, releaseIndex: 23, title: "Black Panther", saga: "Infinito", phase: "Arco 6: Fractura", type: "Película", setting: "Año 2016", postCredits: 2, duration: "2h 14m", summary: "T'Challa rey.", preData: "Wakanda.", hiddenDetails: ["Escudo de Bucky."], keyObject: "La Hierba", timelineReason: "Semana después de Civil War.", postCreditDesc: "2 Fundamentales.", releaseDate: "2018-02-16" },
+    { id: "dr-strange", chronoIndex: 25, releaseIndex: 25, title: "Doctor Strange", saga: "Infinito", phase: "Arco 7: Magia", type: "Película", setting: "Año 2016-2017", postCredits: 2, duration: "1h 55m", summary: "Neurocirujano.", preData: "Multiverso mágico.", hiddenDetails: ["Máquina de guerra herido."], keyObject: "Ojo de Agamotto", timelineReason: "Entrenamiento abarca meses.", postCreditDesc: "1 Fundamental, 1 Teaser.", releaseDate: "2016-11-04" },
+    { id: "thor-3", chronoIndex: 26, releaseIndex: 26, title: "Thor: Ragnarok", saga: "Infinito", phase: "Arco 7: Magia", type: "Película", setting: "Año 2017", postCredits: 2, duration: "2h 10m", summary: "Hela.", preData: "Destruye Asgard.", hiddenDetails: ["Guantelete falso."], keyObject: "La Llama", timelineReason: "Inmediatamente antes de Infinity War.", postCreditDesc: "1 Fundamental, 1 Cómica.", releaseDate: "2017-11-03" },
+    { id: "infinity-war", chronoIndex: 27, releaseIndex: 27, title: "Avengers: Infinity War", saga: "Infinito", phase: "Arco 9: Clímax", type: "Película", setting: "Año 2018", postCredits: 1, duration: "2h 29m", summary: "Thanos.", preData: "Los héroes fallan.", hiddenDetails: ["Cráneo Rojo."], keyObject: "El Guantelete", timelineReason: "Donde cortó Ragnarok.", postCreditDesc: "1 Fundamental.", releaseDate: "2018-04-27" },
+    { id: "ant-man-2", chronoIndex: 28, releaseIndex: 28, title: "Ant-Man and The Wasp", saga: "Infinito", phase: "Arco 9: Clímax", type: "Película", setting: "Año 2018", postCredits: 2, duration: "1h 58m", summary: "Reino Cuántico.", preData: "Post-créditos en Infinity War.", hiddenDetails: ["Túnel."], keyObject: "El Túnel", timelineReason: "Paralelo a Infinity War.", postCreditDesc: "1 Fundamental, 1 Cómica.", releaseDate: "2018-07-06" },
+    { id: "endgame", chronoIndex: 29, releaseIndex: 29, title: "Avengers: Endgame", saga: "Infinito", phase: "Arco 9: Clímax", type: "Película", setting: "Año 2018 - 2023", postCredits: 0, duration: "3h 1m", summary: "Viaje temporal.", preData: "El cierre magistral.", hiddenDetails: ["Sonido final."], keyObject: "Guantelete Stark", timelineReason: "Salto de 5 años.", postCreditDesc: "0 Escenas.", releaseDate: "2019-04-26" },
+    { id: "spiderman-ffh", chronoIndex: 30, releaseIndex: 30, title: "Spider-Man: Far From Home", saga: "Infinito", phase: "Arco 9: Epílogo", type: "Película", setting: "Año 2024", postCredits: 2, duration: "2h 9m", summary: "Europa.", preData: "Mundo post-Blip.", hiddenDetails: ["EDITH."], keyObject: "Las gafas EDITH", timelineReason: "8 meses tras Endgame.", postCreditDesc: "2 Fundamentales.", releaseDate: "2019-07-02" },
+
+    // SAGA DEL MULTIVERSO
+    { id: "spider-man-1", chronoIndex: 31, releaseIndex: 101, title: "Spider-Man", saga: "Multiverso", phase: "Arco 0: Legado Multiversal", type: "Película", setting: "Tierra-96283", postCredits: 0, duration: "2h 1m", summary: "Duende Verde.", preData: "Bases de Tobey.", hiddenDetails: ["Planeador."], keyObject: "Máscara", timelineReason: "Establece Tobey.", postCreditDesc: "Sin escenas.", releaseDate: "2002-05-03" },
+    { id: "spider-man-2", chronoIndex: 32, releaseIndex: 102, title: "Spider-Man 2", saga: "Multiverso", phase: "Arco 0: Legado Multiversal", type: "Película", setting: "Tierra-96283", postCredits: 0, duration: "2h 7m", summary: "Doc Ock.", preData: "Villanos multiversales.", hiddenDetails: ["Tritio."], keyObject: "Tentáculos", timelineReason: "Profundiza veterano.", postCreditDesc: "Sin escenas.", releaseDate: "2004-06-30" },
+    { id: "spider-man-3", chronoIndex: 33, releaseIndex: 103, title: "Spider-Man 3", saga: "Multiverso", phase: "Arco 0: Legado Multiversal", type: "Película", setting: "Tierra-96283", postCredits: 0, duration: "2h 19m", summary: "Simbionte.", preData: "Hombre de Arena.", hiddenDetails: ["Redención."], keyObject: "Simbionte", timelineReason: "Cierre saga Tobey.", postCreditDesc: "Sin escenas.", releaseDate: "2007-05-04" },
+    { id: "tasm-1", chronoIndex: 34, releaseIndex: 104, title: "The Amazing Spider-Man", saga: "Multiverso", phase: "Arco 0: Legado Multiversal", type: "Película", setting: "Tierra-120703", postCredits: 1, duration: "2h 16m", summary: "Lagarto.", preData: "Variante de Andrew.", hiddenDetails: ["Lanza-telarañas."], keyObject: "Fórmula", timelineReason: "Origen Garfield.", postCreditDesc: "1 Teaser.", releaseDate: "2012-07-03" },
+    { id: "tasm-2", chronoIndex: 35, releaseIndex: 105, title: "The Amazing Spider-Man 2", saga: "Multiverso", phase: "Arco 0: Legado Multiversal", type: "Película", setting: "Tierra-120703", postCredits: 1, duration: "2h 22m", summary: "Electro.", preData: "Fracaso emocional.", hiddenDetails: ["Dolor."], keyObject: "Batería", timelineReason: "Mente oscura.", postCreditDesc: "1 Teaser.", releaseDate: "2014-05-02" },
+    { id: "deadpool-1", chronoIndex: 36, releaseIndex: 106, title: "Deadpool", saga: "Multiverso", phase: "Arco 0: Legado Multiversal", type: "Película", setting: "Tierra-10005", postCredits: 2, duration: "1h 48m", summary: "Wade Wilson.", preData: "Choque de tonos.", hiddenDetails: ["Cuarta pared."], keyObject: "Katanas", timelineReason: "Fox.", postCreditDesc: "2 Cómicas.", releaseDate: "2016-02-12" },
+    { id: "logan", chronoIndex: 37, releaseIndex: 107, title: "Logan", saga: "Multiverso", phase: "Arco 0: Legado Multiversal", type: "Película", setting: "Tierra-10005", postCredits: 0, duration: "2h 17m", summary: "Futuro sombrío.", preData: "El ancla emocional.", hiddenDetails: ["Realidad moribunda."], keyObject: "Suero", timelineReason: "Cierre Wolverine.", postCreditDesc: "Sin escenas.", releaseDate: "2017-03-03" },
+    { id: "deadpool-2", chronoIndex: 38, releaseIndex: 108, title: "Deadpool 2", saga: "Multiverso", phase: "Arco 0: Legado Multiversal", type: "Película", setting: "Tierra-10005", postCredits: 2, duration: "1h 59m", summary: "Viaje temporal.", preData: "Líneas temporales.", hiddenDetails: ["Wade arregla el canon."], keyObject: "Dispositivo de Tiempo", timelineReason: "Atrae a la TVA.", postCreditDesc: "2 Fundamentales.", releaseDate: "2018-05-18" },
+    { id: "wandavision", chronoIndex: 39, releaseIndex: 109, title: "WandaVision", saga: "Multiverso", phase: "Arco 1: Legado y Luto", type: "Serie", setting: "Año 2023", postCredits: 3, duration: "9 Episodios", summary: "Sitcom.", preData: "Trauma.", hiddenDetails: ["Comerciales."], keyObject: "El Darkhold", timelineReason: "Tras Endgame.", postCreditDesc: "Varias.", releaseDate: "2021-01-15" },
+    { id: "falcon-ws", chronoIndex: 40, releaseIndex: 110, title: "The Falcon and the Winter Soldier", saga: "Multiverso", phase: "Arco 1: Legado y Luto", type: "Serie", setting: "Año 2024", postCredits: 1, duration: "6 Episodios", summary: "Nuevo Capitán.", preData: "Política.", hiddenDetails: ["Val."], keyObject: "Escudo", timelineReason: "6 meses tras Endgame.", postCreditDesc: "1 Teaser.", releaseDate: "2021-03-19" },
+    { id: "loki-s1-2", chronoIndex: 41, releaseIndex: 111, title: "Loki (Temp. 1 y 2)", saga: "Multiverso", phase: "Arco 2: Multiverso", type: "Serie", setting: "Fuera del Tiempo", postCredits: 1, duration: "12 Episodios", summary: "TVA.", preData: "Reglas Multiverso.", hiddenDetails: ["Aquel que Permanece."], keyObject: "Telar", timelineReason: "Afecta el futuro.", postCreditDesc: "1 Teaser.", releaseDate: "2021-06-09" },
+    { id: "what-if", chronoIndex: 42, releaseIndex: 112, title: "¿Qué pasaría si...?", saga: "Multiverso", phase: "Arco 2: Multiverso", type: "Serie Animada", setting: "Multiverso", postCredits: 1, duration: "27 Episodios", summary: "El Vigilante.", preData: "Variantes.", hiddenDetails: ["Vigilante."], keyObject: "Ojo", timelineReason: "Ruptura Loki.", postCreditDesc: "Teasers.", releaseDate: "2021-08-11" },
+    { id: "shang-chi", chronoIndex: 43, releaseIndex: 113, title: "Shang-Chi", saga: "Multiverso", phase: "Arco 3: Nuevos Pilares", type: "Película", setting: "Año 2024", postCredits: 2, duration: "2h 12m", summary: "Diez anillos.", preData: "Reconecta con IM1.", hiddenDetails: ["Wong."], keyObject: "Diez Anillos", timelineReason: "2024.", postCreditDesc: "1 Fundamental.", releaseDate: "2021-09-03" },
+    { id: "eternals", chronoIndex: 44, releaseIndex: 114, title: "Eternals", saga: "Multiverso", phase: "Arco 3: Nuevos Pilares", type: "Película", setting: "Año 2024", postCredits: 2, duration: "2h 36m", summary: "Inmortales.", preData: "Celestiales.", hiddenDetails: ["Estatua Tiamut."], keyObject: "Unimente", timelineReason: "Blip energía.", postCreditDesc: "2 Fundamentales.", releaseDate: "2021-11-05" },
+    { id: "hawkeye", chronoIndex: 45, releaseIndex: 115, title: "Hawkeye", saga: "Multiverso", phase: "Arco 4: Nivel Callejero", type: "Serie", setting: "Año 2024", postCredits: 1, duration: "6 Episodios", summary: "Navidad.", preData: "Nuevo Ojo Halcón.", hiddenDetails: ["Kingpin."], keyObject: "Traje Ronin", timelineReason: "Navidad 2024.", postCreditDesc: "1 Cómica.", releaseDate: "2021-11-24" },
+    { id: "echo", chronoIndex: 46, releaseIndex: 125, title: "Echo", saga: "Multiverso", phase: "Arco 4: Nivel Callejero", type: "Serie", setting: "Año 2025", postCredits: 1, duration: "5 Episodios", summary: "Maya López.", preData: "Marvel Spotlight.", hiddenDetails: ["Fisk Alcalde."], keyObject: "Legado Choctaw", timelineReason: "5 meses tras Hawkeye (Primavera 2025).", postCreditDesc: "1 Fundamental.", releaseDate: "2024-01-09" },
+    { id: "spiderman-nwh", chronoIndex: 47, releaseIndex: 116, title: "Spider-Man: No Way Home", saga: "Multiverso", phase: "Arco 5: Colisión", type: "Película", setting: "Año 2024", postCredits: 2, duration: "2h 28m", summary: "Identidad revelada.", preData: "Colapso multiversal.", hiddenDetails: ["Matt Murdock."], keyObject: "Macchina", timelineReason: "Finales de 2024.", postCreditDesc: "2 Fundamentales.", releaseDate: "2021-12-17" },
+    { id: "dr-strange-2", chronoIndex: 48, releaseIndex: 118, title: "Doctor Strange: Multiverse of Madness", saga: "Multiverso", phase: "Arco 5: Colisión", type: "Película", setting: "Año 2024", postCredits: 2, duration: "2h 6m", summary: "Wanda oscura.", preData: "Incursiones.", hiddenDetails: ["Illuminati."], keyObject: "Libro Vishanti", timelineReason: "Consecuencia directa del hechizo de NWH.", postCreditDesc: "1 Fundamental.", releaseDate: "2022-05-06" },
+    { id: "moon-knight", chronoIndex: 49, releaseIndex: 117, title: "Moon Knight", saga: "Multiverso", phase: "Arco 6: Lo Sobrenatural", type: "Serie", setting: "Año 2025", postCredits: 1, duration: "6 Episodios", summary: "Dioses egipcios.", preData: "Sobrenatural.", hiddenDetails: ["Madripoor."], keyObject: "Escarabajo", timelineReason: "Aislado.", postCreditDesc: "1 Fundamental.", releaseDate: "2022-03-30" },
+    { id: "ms-marvel", chronoIndex: 50, releaseIndex: 119, title: "Ms. Marvel", saga: "Multiverso", phase: "Arco 7: Nueva Generación", type: "Serie", setting: "Año 2025", postCredits: 1, duration: "6 Episodios", summary: "Kamala Khan.", preData: "Gen X.", hiddenDetails: ["Mutantes."], keyObject: "Brazalete Cuántico", timelineReason: "Otoño 2025.", postCreditDesc: "1 Fundamental.", releaseDate: "2022-06-08" },
+    { id: "thor-4", chronoIndex: 51, releaseIndex: 120, title: "Thor: Love and Thunder", saga: "Multiverso", phase: "Arco 8: Dioses", type: "Película", setting: "Año 2025", postCredits: 2, duration: "1h 59m", summary: "Gorr.", preData: "Eternidad.", hiddenDetails: ["Tribunal Viviente."], keyObject: "Necroespada", timelineReason: "Separación Guardianes.", postCreditDesc: "2 Fundamentales.", releaseDate: "2022-07-08" },
+    { id: "she-hulk", chronoIndex: 52, releaseIndex: 121, title: "She-Hulk", saga: "Multiverso", phase: "Arco 4: Nivel Callejero", type: "Serie", setting: "Año 2025", postCredits: 1, duration: "9 Episodios", summary: "Abogada.", preData: "Rompe 4ta pared.", hiddenDetails: ["Daredevil."], keyObject: "Sangre irradiada", timelineReason: "Verano 2025.", postCreditDesc: "Varias.", releaseDate: "2022-08-18" },
+    { id: "werewolf-night", chronoIndex: 53, releaseIndex: 122, title: "Werewolf by Night", saga: "Multiverso", phase: "Arco 6: Lo Sobrenatural", type: "Presentación Especial", setting: "Año 2025", postCredits: 0, duration: "53m", summary: "Cazadores.", preData: "Monstruos.", hiddenDetails: ["Man-Thing."], keyObject: "Piedra de Sangre", timelineReason: "Atemporal 2025.", postCreditDesc: "Sin escenas.", releaseDate: "2022-10-07" },
+    { id: "black-panther-2", chronoIndex: 54, releaseIndex: 123, title: "Black Panther: Wakanda Forever", saga: "Multiverso", phase: "Arco 3: Nuevos Pilares", type: "Película", setting: "Año 2025", postCredits: 1, duration: "2h 41m", summary: "Namor.", preData: "Mutantes.", hiddenDetails: ["CIA."], keyObject: "Vibranium", timelineReason: "Finales 2025.", postCreditDesc: "1 Fundamental.", releaseDate: "2022-11-11" },
+    { id: "gotg-holiday", chronoIndex: 55, releaseIndex: 124, title: "GotG: The Holiday Special", saga: "Multiverso", phase: "Arco 10: Despedidas", type: "Presentación", setting: "Año 2025", postCredits: 1, duration: "42m", summary: "Kevin Bacon.", preData: "Knowhere.", hiddenDetails: ["Mantis."], keyObject: "Kevin Bacon", timelineReason: "Navidad 2025.", postCreditDesc: "1 Cómica.", releaseDate: "2022-11-25" },
+    { id: "ant-man-3", chronoIndex: 56, releaseIndex: 126, title: "Ant-Man: Quantumania", saga: "Multiverso", phase: "Arco 9: Dinastía", type: "Película", setting: "Año 2026", postCredits: 2, duration: "2h 5m", summary: "Kang.", preData: "Amenaza física.", hiddenDetails: ["Anillos."], keyObject: "Núcleo de Energía", timelineReason: "Inicios de 2026.", postCreditDesc: "2 Fundamentales.", releaseDate: "2023-02-17" },
+    { id: "gotg-3", chronoIndex: 57, releaseIndex: 127, title: "Guardianes de la Galaxia Vol. 3", saga: "Multiverso", phase: "Arco 10: Despedidas", type: "Película", setting: "Año 2026", postCredits: 2, duration: "2h 30m", summary: "Rocket.", preData: "Final equipo.", hiddenDetails: ["Phyla-Vell."], keyObject: "Código Rocket", timelineReason: "2026.", postCreditDesc: "2 Fundamentales.", releaseDate: "2023-05-05" },
+    { id: "secret-invasion", chronoIndex: 58, releaseIndex: 128, title: "Secret Invasion", saga: "Multiverso", phase: "Arco 11: Paranoia", type: "Serie", setting: "Año 2026", postCredits: 0, duration: "6 Episodios", summary: "Skrulls.", preData: "Thriller.", hiddenDetails: ["Rhodey."], keyObject: "ADN", timelineReason: "Fury regresa.", postCreditDesc: "Sin escenas.", releaseDate: "2023-06-21" },
+    { id: "the-marvels", chronoIndex: 59, releaseIndex: 129, title: "The Marvels", saga: "Multiverso", phase: "Arco 7: Nueva", type: "Película", setting: "Año 2026", postCredits: 1, duration: "1h 45m", summary: "Ms. Marvel.", preData: "Puente X-Men.", hiddenDetails: ["Bestia."], keyObject: "Segundo Brazalete", timelineReason: "Tras Secret Invasion.", postCreditDesc: "1 Fundamental.", releaseDate: "2023-11-10" },
+    { id: "deadpool-3", chronoIndex: 60, releaseIndex: 130, title: "Deadpool & Wolverine", saga: "Multiverso", phase: "Arco 5: Colisión", type: "Película", setting: "Año 2024 / Vacío", postCredits: 1, duration: "2h 7m", summary: "TVA.", preData: "Ser Ancla.", hiddenDetails: ["Reglas Loki."], keyObject: "Crono-Rastreador", timelineReason: "La TVA recluta.", postCreditDesc: "1 Cómica.", releaseDate: "2024-07-26" },
+    { id: "agatha-all-along", chronoIndex: 61, releaseIndex: 131, title: "Agatha All Along", saga: "Multiverso", phase: "Arco 6: Lo Sobrenatural", type: "Serie", setting: "Año 2026", postCredits: 0, duration: "9 Episodios", summary: "Senda de las Brujas.", preData: "Expande magia.", hiddenDetails: ["Destino Wanda."], keyObject: "La Senda", timelineReason: "3 años tras Westview.", postCreditDesc: "Sin escenas.", releaseDate: "2024-09-18" },
+    { id: "daredevil-born-again", chronoIndex: 62, releaseIndex: 132, title: "Daredevil: Born Again", saga: "Multiverso", phase: "Arco 4: Nivel Callejero", type: "Serie", setting: "Año 2026", postCredits: 0, duration: "18 Episodios", summary: "Fisk Alcalde.", preData: "Culminación callejera.", hiddenDetails: ["Devil's Reign."], keyObject: "Bastón y Maletín", timelineReason: "Fisk en el poder en NY.", postCreditDesc: "Por confirmar.", releaseDate: "2025-03-01" },
+    { id: "cap-america-4", chronoIndex: 63, releaseIndex: 133, title: "Captain America: Brave New World", saga: "Multiverso", phase: "Arco 11: Paranoia", type: "Película", setting: "Año 2026", postCredits: 2, duration: "2h 15m", summary: "Incidente internacional.", preData: "Geopolítica.", hiddenDetails: ["Adamantium."], keyObject: "Adamantium", timelineReason: "Restos Tiamut.", postCreditDesc: "Escenas clave.", releaseDate: "2025-02-14" },
+    { id: "thunderbolts", chronoIndex: 64, releaseIndex: 134, title: "Thunderbolts*", saga: "Multiverso", phase: "Arco 11: Paranoia", type: "Película", setting: "Año 2026", postCredits: 1, duration: "2h 10m", summary: "Antihéroes.", preData: "Equipo CIA.", hiddenDetails: ["Asterisco."], keyObject: "Sentry", timelineReason: "Equipo CIA en acción.", postCreditDesc: "Por confirmar.", releaseDate: "2025-05-02" },
+    { id: "fantastic-four", chronoIndex: 65, releaseIndex: 135, title: "The Fantastic Four: First Steps", saga: "Multiverso", phase: "Arco 12: Fronteras", type: "Película", setting: "Años 60 / Alternos", postCredits: 2, duration: "2h 20m", summary: "Años 60.", preData: "Pilar absoluto.", hiddenDetails: ["Galactus."], keyObject: "Fantasticar", timelineReason: "Línea alternativa.", postCreditDesc: "Crucial.", releaseDate: "2025-07-25" }
 ];

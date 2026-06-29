@@ -1,171 +1,356 @@
-let appState = { statusFilter: 'all', sagaFilter: 'all', searchQuery: '', watched: [], notes: {} };
-
-document.addEventListener('DOMContentLoaded', () => {
-    loadData();
-    updateUI();
-});
-
-function loadData() {
-    const savedWatched = localStorage.getItem('ucm_watched');
-    const savedNotes = localStorage.getItem('ucm_notes');
-    if (savedWatched) appState.watched = JSON.parse(savedWatched);
-    if (savedNotes) appState.notes = JSON.parse(savedNotes);
-}
-
-function saveData() {
-    localStorage.setItem('ucm_watched', JSON.stringify(appState.watched));
-    localStorage.setItem('ucm_notes', JSON.stringify(appState.notes));
-}
-
-function saveNote(id) {
-    const textarea = document.getElementById(`note-${id}`);
-    const noteText = textarea.value.trim();
-    if (noteText === '') { delete appState.notes[id]; } else { appState.notes[id] = noteText; }
-    saveData();
-    
-    const btn = document.getElementById(`btn-note-${id}`);
-    const originalText = btn.innerHTML;
-    btn.innerHTML = '<i class="fa-solid fa-check"></i> Guardado';
-    btn.classList.add('text-emerald-400');
-    setTimeout(() => {
-        btn.innerHTML = originalText;
-        btn.classList.remove('text-emerald-400');
-    }, 1500);
-}
-
-function toggleWatched(id) {
-    const index = appState.watched.indexOf(id);
-    if (index === -1) { appState.watched.push(id); } else { appState.watched.splice(index, 1); }
-    saveData();
-    renderGrid();
-}
-
-// Nueva animación con max-height en lugar de 'hidden'
-function toggleDetails(id) {
-    const detailsDiv = document.getElementById(`details-${id}`);
-    const icon = document.getElementById(`icon-expand-${id}`);
-    
-    detailsDiv.classList.toggle('open');
-    
-    if (detailsDiv.classList.contains('open')) {
-        icon.style.transform = 'rotate(180deg)';
-    } else {
-        icon.style.transform = 'rotate(0deg)';
+// --- ESTADO Y ALMACENAMIENTO ---
+const Storage = {
+    keys: { watched: 'ucm_watched', notes: 'ucm_notes', ratings: 'ucm_ratings', sort: 'ucm_sort' },
+    save(key, data) { localStorage.setItem(this.keys[key], JSON.stringify(data)); },
+    load(key, fallback) { 
+        const data = localStorage.getItem(this.keys[key]);
+        return data ? JSON.parse(data) : fallback;
     }
-}
+};
 
-function setSaga(saga) { appState.sagaFilter = saga; updateUI(); }
-function setStatus(status) { appState.statusFilter = status; updateUI(); }
-function setSearch(query) { appState.searchQuery = query.toLowerCase(); renderGrid(); } // Filtro de búsqueda
-
-function updateUI() {
-    ['all', 'Infinito', 'Multiverso'].forEach(s => {
-        const btn = document.getElementById(`tab-saga-${s}`);
-        btn.className = (s === appState.sagaFilter) 
-            ? "flex-1 px-4 py-2 text-sm font-bold rounded-md transition-all bg-red-600 text-white shadow-md"
-            : "flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all text-slate-400 hover:bg-slate-800 hover:text-white";
-    });
-
-    ['all', 'pending', 'watched'].forEach(s => {
-        const btn = document.getElementById(`btn-status-${s}`);
-        btn.className = (s === appState.statusFilter)
-            ? "px-4 py-2 text-sm font-bold rounded-lg transition-all bg-slate-800 text-white border border-slate-700 shadow-md"
-            : "px-4 py-2 text-sm font-medium rounded-lg transition-all text-slate-400 hover:text-white bg-transparent";
-    });
-    renderGrid();
-}
-
-function renderGrid() {
-    const container = document.getElementById('movies-container');
-    container.innerHTML = '';
-
-    const filtered = marvelDataset.filter(movie => {
-        const isWatched = appState.watched.includes(movie.id);
-        const matchStatus = appState.statusFilter === 'all' || 
-                           (appState.statusFilter === 'watched' && isWatched) || 
-                           (appState.statusFilter === 'pending' && !isWatched);
-        const matchSaga = appState.sagaFilter === 'all' || movie.saga === appState.sagaFilter;
-        const matchSearch = appState.searchQuery === '' || movie.title.toLowerCase().includes(appState.searchQuery);
-        
-        return matchStatus && matchSaga && matchSearch;
-    });
-
-    document.getElementById('progress-stats').innerText = `${appState.watched.length} / ${marvelDataset.length}`;
-
-    if (filtered.length === 0) {
-        container.innerHTML = `
-            <div class="col-span-full text-center py-16 text-slate-500 border border-dashed border-slate-800 rounded-xl bg-slate-900/50">
-                <i class="fa-solid fa-satellite-dish text-4xl mb-4 block opacity-50"></i>
-                <p>El radar no detecta producciones en esta categoría o búsqueda.</p>
-            </div>`;
-        return;
+const State = {
+    filters: { status: 'all', saga: 'all', sort: 'narrative' },
+    data: { watched: [], notes: {}, ratings: {} },
+    
+    init() {
+        this.data.watched = Storage.load('watched', []);
+        this.data.notes = Storage.load('notes', {});
+        this.data.ratings = Storage.load('ratings', {});
+        this.filters.sort = Storage.load('sort', 'narrative');
+        if (typeof this.filters.sort !== 'string') this.filters.sort = 'narrative'; 
     }
+};
 
-    filtered.forEach(movie => {
-        const isWatched = appState.watched.includes(movie.id);
-        const hiddenList = movie.hiddenDetails.map(detail => `<li>- ${detail}</li>`).join('');
+// --- INTERFAZ Y RENDERIZADO (UI) ---
+const UI = {
+    escapeHTML(str) {
+        if (!str) return '';
+        return str.replace(/[&<>'"]/g, tag => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+        }[tag]));
+    },
+
+    updateStats() {
+        // 1. Filtrar las películas según la saga actual
+        const currentSagaMovies = marvelDataset.filter(m => State.filters.saga === 'all' || m.saga === State.filters.saga);
+        const totalInSaga = currentSagaMovies.length;
         
-        const card = document.createElement('div');
-        card.className = `flex flex-col border rounded-xl overflow-hidden bg-gradient-to-b from-slate-900 to-slate-950 transition-all duration-300 ${isWatched ? 'border-emerald-500/30 opacity-75' : 'border-slate-700 shadow-lg shadow-black/50'}`;
+        // 2. Contar cuántas de ESA saga están marcadas como vistas
+        const watchedInSaga = currentSagaMovies.filter(m => State.data.watched.includes(m.id));
+        const watchedCount = watchedInSaga.length;
+
+        // 3. Actualizar la etiqueta visual (Textos limpios, sin paréntesis)
+        const labels = {
+            'all': 'Progreso Total',
+            'Infinito': 'Progreso Infinito',
+            'Multiverso': 'Progreso Multiverso'
+        };
+        document.getElementById('stats-label').innerText = labels[State.filters.saga];
+        document.getElementById('progress-stats').innerText = `${watchedCount} / ${totalInSaga}`;
         
-        card.innerHTML = `
-            <div class="p-5 cursor-pointer hover:bg-slate-800/40 transition-colors group" onclick="toggleDetails('${movie.id}')">
-                <div class="flex justify-between items-center gap-4">
-                    <div class="flex-grow">
-                        <div class="flex flex-wrap gap-2 mb-2">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-amber-500 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded">${movie.phase}</span>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-cyan-400 bg-cyan-400/10 border border-cyan-400/20 px-2 py-0.5 rounded flex items-center gap-1">
-                                <i class="fa-solid ${movie.type === 'Serie' ? 'fa-tv' : 'fa-film'}"></i> ${movie.type}
-                            </span>
-                        </div>
-                        <h3 class="text-xl font-bold text-slate-100 leading-tight group-hover:text-red-500 transition-colors">${movie.title}</h3>
-                        <p class="text-xs text-slate-400 mt-1"><i class="fa-regular fa-clock"></i> ${movie.setting}</p>
-                    </div>
-                    
-                    <div class="flex items-center gap-4 shrink-0">
-                        <button onclick="event.stopPropagation(); toggleWatched('${movie.id}')" class="flex items-center justify-center w-12 h-12 rounded-full border-2 transition-all shadow-md hover:scale-105 ${isWatched ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-red-500 hover:text-red-500'}">
-                            <i class="fa-solid fa-xl ${isWatched ? 'fa-check' : 'fa-power-off'}"></i>
-                        </button>
-                        <i id="icon-expand-${movie.id}" class="fa-solid fa-chevron-down text-slate-500 transition-transform duration-300"></i>
-                    </div>
-                </div>
-            </div>
+        // 4. Calcular el tiempo invertido solo de esa selección
+        let totalMins = watchedInSaga.reduce((acc, movie) => {
+            if (movie.type.includes('Serie')) {
+                return acc + ((parseInt(movie.duration) || 0) * 45); 
+            } else {
+                const h = movie.duration.match(/(\d+)h/) ? parseInt(movie.duration.match(/(\d+)h/)[1], 10) : 0;
+                const m = movie.duration.match(/(\d+)m/) ? parseInt(movie.duration.match(/(\d+)m/)[1], 10) : 0;
+                return acc + (h * 60) + m;
+            }
+        }, 0);
+        
+        document.getElementById('time-stats').innerText = `${Math.floor(totalMins / 60)}h ${totalMins % 60}m`;
+    },
+
+    updateNavigationTabs() {
+        ['all', 'Infinito', 'Multiverso'].forEach(s => {
+            const btn = document.getElementById(`tab-saga-${s}`);
+            btn.className = (s === State.filters.saga) 
+                ? "font-oswald flex-1 px-4 py-2 text-sm uppercase tracking-wide font-bold rounded-md transition-all bg-marvel text-white shadow-[0_0_15px_rgba(220,38,38,0.4)] duration-500"
+                : "font-oswald flex-1 px-4 py-2 text-sm uppercase tracking-wide rounded-md transition-all text-slate-400 hover:bg-slate-800 hover:text-white";
+        });
+
+        ['all', 'pending', 'watched'].forEach(s => {
+            const btn = document.getElementById(`btn-status-${s}`);
+            btn.className = (s === State.filters.status)
+                ? "font-oswald px-3 py-1.5 text-sm tracking-wide font-bold rounded-lg transition-all bg-slate-800 text-white border border-slate-600 shadow-md"
+                : "font-oswald px-3 py-1.5 text-sm tracking-wide rounded-lg transition-all text-slate-400 hover:text-white bg-transparent";
+        });
+    },
+
+    updateCardTargeted(id) {
+        const isWatched = State.data.watched.includes(id);
+        const card = document.getElementById(`card-${id}`);
+        const btnWatch = document.getElementById(`btn-watch-${id}`);
+        const iconWatch = document.getElementById(`icon-watch-${id}`);
+        const spoilerOverlay = document.getElementById(`spoiler-overlay-${id}`);
+        const detailsContainer = document.getElementById(`details-container-${id}`);
+        
+        if(!card) return;
+
+        if(isWatched) {
+            card.classList.add('border-emerald-500/40', 'opacity-90');
+            card.classList.remove('border-slate-700');
+            btnWatch.className = "flex items-center justify-center w-12 h-12 rounded-full border-2 transition-all shadow-md hover:scale-105 bg-emerald-500/20 border-emerald-500 text-emerald-400";
+            iconWatch.className = "fa-solid fa-xl fa-check";
+            if(spoilerOverlay) spoilerOverlay.classList.add('hidden');
+            if(detailsContainer) detailsContainer.classList.remove('opacity-30', 'pointer-events-none', 'select-none');
+        } else {
+            card.classList.remove('border-emerald-500/40', 'opacity-90');
+            card.classList.add('border-slate-700');
+            btnWatch.className = "flex items-center justify-center w-12 h-12 rounded-full border-2 transition-all shadow-md hover:scale-105 bg-slate-900 border-slate-700 text-slate-400 hover:border-marvel hover:text-marvel";
+            iconWatch.className = "fa-solid fa-xl fa-power-off";
+            if(spoilerOverlay) spoilerOverlay.classList.remove('hidden');
+            if(detailsContainer) detailsContainer.classList.add('opacity-30', 'pointer-events-none', 'select-none');
+        }
+
+        if(State.filters.status !== 'all') {
+            this.renderGrid();
+        }
+    },
+
+    renderGrid() {
+        const container = document.getElementById('movies-container');
+        container.innerHTML = '';
+
+        let filtered = marvelDataset.filter(movie => {
+            const isWatched = State.data.watched.includes(movie.id);
+            const matchStatus = State.filters.status === 'all' || 
+                               (State.filters.status === 'watched' && isWatched) || 
+                               (State.filters.status === 'pending' && !isWatched);
+            const matchSaga = State.filters.saga === 'all' || movie.saga === State.filters.saga;
+            return matchStatus && matchSaga;
+        });
+
+        if (State.filters.sort === 'release') {
+            filtered.sort((a, b) => a.releaseIndex - b.releaseIndex);
+        } else {
+            filtered.sort((a, b) => a.chronoIndex - b.chronoIndex);
+        }
+
+        if (filtered.length === 0) {
+            container.innerHTML = `
+                <div class="col-span-full text-center py-20 text-slate-500 border border-dashed border-slate-800 rounded-xl bg-slate-900/30 glass-panel">
+                    <i class="fa-solid fa-satellite-dish text-5xl mb-4 block opacity-40"></i>
+                    <p class="font-oswald text-xl tracking-wide uppercase">El radar no detecta producciones en esta configuración.</p>
+                </div>`;
+            return;
+        }
+
+        filtered.forEach(movie => {
+            const isWatched = State.data.watched.includes(movie.id);
+            const userNote = this.escapeHTML(State.data.notes[movie.id] || '');
+            const userRating = State.data.ratings[movie.id] || 0;
+            const hiddenList = movie.hiddenDetails.map(detail => `<li>- ${this.escapeHTML(detail)}</li>`).join('');
             
-            <div id="details-${movie.id}" class="details-panel border-t border-slate-800/80 bg-slate-950/50">
-                <div class="p-5 space-y-3">
-                    <div class="bg-slate-900/80 rounded-lg p-3 border-l-2 border-l-red-600">
-                        <p class="text-sm text-slate-300 leading-relaxed">${movie.preData}</p>
-                    </div>
-                    
-                    <div class="flex items-center justify-between bg-amber-500/5 rounded-lg p-3 border border-amber-500/20">
-                        <span class="text-xs font-bold text-amber-500 uppercase"><i class="fa-solid fa-gem"></i> Objeto Clave:</span>
-                        <span class="text-amber-400 text-xs font-bold bg-amber-500/10 px-2 py-1 rounded">${movie.keyObject}</span>
-                    </div>
+            let starsHTML = '';
+            for(let i=1; i<=5; i++) {
+                starsHTML += `<i class="fa-star ${i <= userRating ? 'fa-solid text-amber-400' : 'fa-regular text-slate-600'} cursor-pointer hover:text-amber-300 transition-colors" onclick="event.stopPropagation(); App.rateMovie('${movie.id}', ${i})"></i>`;
+            }
 
-                    <div class="flex items-center justify-between bg-slate-900 rounded-lg p-3 border border-slate-800">
-                        <span class="text-xs font-bold text-slate-400 uppercase"><i class="fa-solid fa-clapperboard"></i> Post-Créditos:</span>
-                        <span class="bg-slate-800 text-white text-xs font-bold px-2 py-1 rounded">${movie.postCredits}</span>
-                    </div>
-                    <div class="bg-slate-900 rounded-lg p-3 border border-slate-800">
-                        <h4 class="text-xs font-bold text-purple-400 uppercase mb-2"><i class="fa-solid fa-eye-low-vision"></i> Detalles (1%):</h4>
-                        <ul class="text-xs text-slate-400 space-y-1 pl-1">${hiddenList}</ul>
+            const card = document.createElement('div');
+            card.id = `card-${movie.id}`;
+            card.className = `movie-card flex flex-col border rounded-xl overflow-hidden bg-gradient-to-br from-slate-900 to-slate-950 transition-all duration-500 card-glow shadow-xl ${isWatched ? 'border-emerald-500/40 opacity-90' : 'border-slate-700'}`;
+            
+            card.innerHTML = `
+                <div class="p-6 cursor-pointer hover:bg-slate-800/60 transition-colors group relative" onclick="App.toggleDetails('${movie.id}')">
+                    <div class="flex justify-between items-start gap-4">
+                        <div class="flex-grow z-10">
+                            <div class="flex flex-wrap gap-2 mb-3">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-amber-500 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded shadow-sm">${this.escapeHTML(movie.phase)}</span>
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-cyan-400 bg-cyan-400/10 border border-cyan-400/20 px-2 py-0.5 rounded flex items-center gap-1 shadow-sm">
+                                    <i class="fa-solid ${movie.type.includes('Serie') ? 'fa-tv' : 'fa-film'}"></i> ${this.escapeHTML(movie.type)}
+                                </span>
+                            </div>
+                            <h3 class="font-oswald text-2xl font-bold text-slate-100 leading-tight group-hover:text-marvel transition-colors duration-300 uppercase">${this.escapeHTML(movie.title)}</h3>
+                            <div class="flex flex-wrap gap-4 mt-3">
+                                <p class="text-xs font-medium text-slate-400"><i class="fa-regular fa-clock text-emerald-500 mr-1"></i> ${movie.duration}</p>
+                                <p class="text-xs font-medium text-slate-400"><i class="fa-solid fa-location-crosshairs text-blue-400 mr-1"></i> ${this.escapeHTML(movie.setting)}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-col items-end gap-4 shrink-0 z-10">
+                            <button id="btn-watch-${movie.id}" onclick="event.stopPropagation(); App.toggleWatched('${movie.id}')" class="flex items-center justify-center w-12 h-12 rounded-full border-2 transition-all shadow-md hover:scale-105 ${isWatched ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-marvel hover:text-marvel'}">
+                                <i id="icon-watch-${movie.id}" class="fa-solid fa-xl ${isWatched ? 'fa-check' : 'fa-power-off'}"></i>
+                            </button>
+                            <div class="bg-slate-800/50 rounded-full w-8 h-8 flex items-center justify-center border border-slate-700/50">
+                                <i id="icon-expand-${movie.id}" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="bg-slate-950 border-t border-slate-900 p-4">
-                    <div class="flex justify-between items-center mb-2">
-                        <label class="text-xs font-bold text-slate-500 uppercase"><i class="fa-solid fa-pen-clip"></i> Tus Notas:</label>
-                        <button id="btn-note-${movie.id}" onclick="saveNote('${movie.id}')" class="text-xs text-slate-400 hover:text-white transition-colors flex items-center gap-1">
-                            <i class="fa-solid fa-floppy-disk"></i> Guardar
-                        </button>
+                <div id="details-${movie.id}" class="hidden border-t border-slate-800/80 bg-slate-950/80 relative">
+                    <div class="bg-blue-900/10 border-b border-blue-500/20 p-4 px-6 flex items-start gap-3">
+                        <i class="fa-solid fa-timeline text-blue-400 mt-1"></i>
+                        <p class="text-sm text-blue-100/80 leading-relaxed"><strong class="text-blue-400 font-oswald uppercase tracking-wide">Línea Temporal:</strong> ${this.escapeHTML(movie.timelineReason)}</p>
                     </div>
-                    <textarea id="note-${movie.id}" class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-sm text-slate-300 placeholder-slate-600 focus:outline-none focus:border-red-500/50 resize-y min-h-[80px]" placeholder="Observaciones de campo..."></textarea>
+
+                    <div class="p-6 space-y-5 relative">
+                        <div id="spoiler-overlay-${movie.id}" class="${!isWatched ? 'absolute inset-0 z-10 flex items-center justify-center backdrop-blur-md bg-slate-950/70' : 'hidden'}">
+                            <div class="bg-slate-900 border border-slate-700 px-5 py-3 rounded-lg text-sm text-slate-300 shadow-[0_0_30px_rgba(0,0,0,0.8)] flex items-center gap-3 font-medium">
+                                <i class="fa-solid fa-lock text-marvel"></i> Marca como vista para revelar Archivos Clasificados
+                            </div>
+                        </div>
+                        
+                        <div id="details-container-${movie.id}" class="${!isWatched ? 'opacity-30 pointer-events-none select-none' : ''} transition-opacity duration-500">
+                            <div>
+                                <h4 class="font-oswald text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">Sinopsis de Archivo</h4>
+                                <p class="text-sm text-slate-300 leading-relaxed">${this.escapeHTML(movie.summary)}</p>
+                            </div>
+
+                            <div class="bg-slate-900/80 rounded-lg p-4 border-l-4 border-marvel transition-colors duration-300 mt-5 shadow-inner">
+                                <p class="text-sm text-slate-300 leading-relaxed"><i class="fa-solid fa-circle-exclamation text-marvel mr-2"></i> ${this.escapeHTML(movie.preData)}</p>
+                            </div>
+                            
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between bg-slate-900 rounded-lg p-4 border border-slate-800 mt-5 gap-3">
+                                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider"><i class="fa-solid fa-clapperboard mr-1"></i> Post-Créditos (${movie.postCredits}):</span>
+                                <span class="text-xs font-medium text-slate-200 bg-slate-800 px-3 py-1.5 rounded border border-slate-700">${this.escapeHTML(movie.postCreditDesc)}</span>
+                            </div>
+                            
+                            <div class="bg-slate-900/50 rounded-lg p-4 border border-slate-800/50 mt-5">
+                                <h4 class="font-oswald text-sm font-bold text-purple-400 uppercase tracking-wide mb-3"><i class="fa-solid fa-eye-low-vision mr-1"></i> Detalles Nivel 7:</h4>
+                                <ul class="text-sm text-slate-400 space-y-2 pl-1">${hiddenList}</ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-slate-900/80 border-t border-slate-800 p-5 relative z-20">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-3">
+                            <label class="font-oswald text-sm font-bold text-slate-400 uppercase tracking-wide"><i class="fa-solid fa-pen-clip mr-1"></i> Diario de Investigación:</label>
+                            <div class="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                                <div class="flex gap-1 text-base" title="Califica esta entrega">${starsHTML}</div>
+                                <button id="btn-note-${movie.id}" onclick="App.saveNote('${movie.id}')" class="text-xs font-bold tracking-wide uppercase text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded transition-colors flex items-center gap-2">
+                                    <i class="fa-solid fa-floppy-disk"></i> Guardar
+                                </button>
+                            </div>
+                        </div>
+                        <textarea id="note-${movie.id}" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-4 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-marvel focus:ring-1 focus:ring-marvel transition-all resize-y min-h-[100px]" placeholder="Añade tus teorías o análisis aquí...">${userNote}</textarea>
+                    </div>
                 </div>
-            </div>
-        `;
-        container.appendChild(card);
+            `;
+            container.appendChild(card);
+        });
+    },
+
+    renderInventory() {
+        const list = document.getElementById('inventory-list');
+        const collected = marvelDataset.filter(m => State.data.watched.includes(m.id) && m.keyObject);
         
-        // Inyección segura del texto del usuario para prevenir XSS
-        document.getElementById(`note-${movie.id}`).value = appState.notes[movie.id] || '';
-    });
-}
+        if(collected.length === 0) {
+            list.innerHTML = `
+                <div class="col-span-full text-center py-16">
+                    <i class="fa-solid fa-box-open text-6xl text-slate-700 mb-4 block"></i>
+                    <p class="font-oswald text-xl text-slate-500 uppercase tracking-wide">Bóveda Vacía</p>
+                    <p class="text-sm text-slate-600 mt-2">Marca películas como vistas para asegurar artefactos multiversales.</p>
+                </div>`;
+            return;
+        }
+        
+        list.innerHTML = `<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">` + 
+            collected.map(m => `
+            <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl flex flex-col items-center text-center shadow-lg hover:border-amber-500/50 hover:bg-slate-900 transition-all group">
+                <div class="w-14 h-14 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center text-2xl mb-3 border border-amber-500/30 group-hover:scale-110 group-hover:bg-amber-500/20 transition-all shadow-[0_0_10px_rgba(245,158,11,0.2)]">
+                    <i class="fa-solid fa-gem"></i>
+                </div>
+                <h4 class="text-sm font-bold text-slate-200 mb-1 leading-tight">${this.escapeHTML(m.keyObject)}</h4>
+                <span class="text-[10px] text-slate-500 font-medium uppercase tracking-wider">${this.escapeHTML(m.title)}</span>
+            </div>`).join('') + `</div>`;
+    }
+};
+
+// --- CONTROLADOR PRINCIPAL ---
+const App = {
+    init() {
+        State.init();
+        document.getElementById('sort-select').value = State.filters.sort;
+        UI.updateNavigationTabs();
+        UI.updateStats();
+        UI.renderGrid();
+    },
+
+    setSaga(saga) { 
+        State.filters.saga = saga; 
+        const root = document.documentElement;
+        
+        if (saga === 'Infinito') root.style.setProperty('--color-marvel', '#a855f7');
+        else if (saga === 'Multiverso') root.style.setProperty('--color-marvel', '#10b981');
+        else root.style.setProperty('--color-marvel', '#dc2626');
+        
+        UI.updateNavigationTabs(); 
+        UI.renderGrid();
+        UI.updateStats(); 
+    },
+
+    setStatus(status) { 
+        State.filters.status = status; 
+        UI.updateNavigationTabs(); 
+        UI.renderGrid(); 
+    },
+
+    setSortOrder(order) {
+        State.filters.sort = order;
+        Storage.save('sort', order);
+        UI.renderGrid();
+    },
+
+    toggleWatched(id) {
+        const index = State.data.watched.indexOf(id);
+        if (index === -1) State.data.watched.push(id); 
+        else State.data.watched.splice(index, 1);
+        
+        Storage.save('watched', State.data.watched);
+        UI.updateStats();
+        UI.updateCardTargeted(id);
+    },
+
+    rateMovie(id, rating) {
+        State.data.ratings[id] = rating;
+        Storage.save('ratings', State.data.ratings);
+        UI.renderGrid(); 
+    },
+
+    saveNote(id) {
+        const textarea = document.getElementById(`note-${id}`);
+        const noteText = textarea.value.trim();
+        
+        if (noteText === '') delete State.data.notes[id]; 
+        else State.data.notes[id] = noteText;
+        
+        Storage.save('notes', State.data.notes);
+        
+        const btn = document.getElementById(`btn-note-${id}`);
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Hecho';
+        btn.classList.replace('text-slate-400', 'text-emerald-400');
+        btn.classList.add('border-emerald-500/50');
+        
+        setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.classList.replace('text-emerald-400', 'text-slate-400');
+            btn.classList.remove('border-emerald-500/50');
+        }, 1500);
+    },
+
+    toggleDetails(id) {
+        const detailsDiv = document.getElementById(`details-${id}`);
+        const icon = document.getElementById(`icon-expand-${id}`);
+        
+        if (detailsDiv.classList.contains('hidden')) {
+            detailsDiv.classList.remove('hidden');
+            icon.style.transform = 'rotate(180deg)';
+        } else {
+            detailsDiv.classList.add('hidden');
+            icon.style.transform = 'rotate(0deg)';
+        }
+    },
+
+    toggleInventory() {
+        const modal = document.getElementById('inventory-modal');
+        modal.classList.toggle('hidden');
+        if (!modal.classList.contains('hidden')) UI.renderInventory();
+    }
+};
+
+// Arrancar la aplicación al cargar el DOM
+document.addEventListener('DOMContentLoaded', () => App.init());

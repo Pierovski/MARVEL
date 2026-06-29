@@ -1,11 +1,11 @@
-const CACHE_NAME = 'marvel-tracker-v1';
+const CACHE_NAME = 'marvel-tracker-v1.3';
 const urlsToCache = [
     './',
     './index.html',
     './app.js',
     './data.js',
     './manifest.json',
-    './image.png'
+    './imagen.png' // ¡Corregido! Antes decía image.png
 ];
 
 // Instalación del Service Worker y guardado en caché

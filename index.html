@@ -3,78 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MARVEL Tracker</title>
+    <title>MARVEL | Archivo Multiversal</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#dc2626">
     <meta name="apple-mobile-web-app-capable" content="yes">
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { marvel: 'var(--color-marvel)' },
+                    fontFamily: {
+                        oswald: ['Oswald', 'sans-serif'],
+                        roboto: ['Roboto', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        :root { --color-marvel: #dc2626; }
         textarea::-webkit-scrollbar { width: 6px; }
         textarea::-webkit-scrollbar-track { background: transparent; }
         textarea::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        
-        /* Animación suave real para desplegar */
-        .details-panel { 
-            max-height: 0; 
-            overflow: hidden; 
-            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
-        }
-        .details-panel.open { 
-            max-height: 800px; /* Suficiente para el contenido */
-        }
+        .glass-panel { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .card-glow:hover { box-shadow: 0 0 20px -5px var(--color-marvel); }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased selection:bg-red-600 selection:text-white">
-    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-50">
-        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+<body class="bg-slate-950 text-slate-100 min-h-screen font-roboto antialiased selection:bg-marvel selection:text-white pb-20 overflow-x-hidden">
+    
+    <header class="border-b border-slate-800 glass-panel sticky top-0 z-40 transition-colors duration-500">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-4">
-                <h1 class="bg-red-600 text-white font-black tracking-tighter px-4 py-1 text-2xl rounded shadow-lg shadow-red-900/20 uppercase">MARVEL</h1>
-                
-                <div class="relative">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500 text-sm"></i>
-                    <input type="text" id="search-input" onkeyup="setSearch(this.value)" placeholder="Buscar misión..." class="bg-slate-950 border border-slate-700 rounded-lg pl-9 pr-3 py-1.5 text-sm text-white focus:border-red-500 focus:outline-none transition-colors w-full md:w-64">
-                </div>
+                <h1 class="font-oswald bg-marvel text-white font-bold tracking-wider px-4 py-1 text-2xl rounded shadow-lg uppercase transition-colors duration-500">MARVEL</h1>
             </div>
-
-            <div class="bg-slate-950 border border-slate-800 px-5 py-2 rounded-lg text-sm font-medium flex items-center gap-3">
-                <i class="fa-solid fa-crosshairs text-red-500"></i>
-                Progreso Total: <span id="progress-stats" class="text-white font-bold">0 / 0</span>
+            <div class="flex flex-wrap gap-2 justify-center">
+                <div class="bg-slate-900 border border-slate-700 px-4 py-1.5 rounded-lg text-xs font-medium flex items-center gap-2">
+    <i class="fa-solid fa-crosshairs text-marvel transition-colors duration-500"></i>
+    <span id="stats-label" class="text-slate-400 uppercase tracking-wide">Progreso Total</span>: <span id="progress-stats" class="text-white font-bold font-oswald tracking-wide">0 / 0</span>
+</div>
+                <div class="bg-slate-900 border border-slate-700 px-4 py-1.5 rounded-lg text-xs font-medium flex items-center gap-2">
+                    <i class="fa-regular fa-clock text-blue-400"></i>
+                    Tiempo: <span id="time-stats" class="text-white font-bold font-oswald tracking-wide">0h 0m</span>
+                </div>
             </div>
         </div>
     </header>
 
-    <main class="max-w-6xl mx-auto px-4 py-8">
-        <div class="bg-slate-900 border border-slate-800 rounded-xl p-2 mb-8 flex flex-col lg:flex-row justify-between gap-4 shadow-lg">
-            <div class="flex bg-slate-950 rounded-lg p-1 border border-slate-800/50 w-full lg:w-auto overflow-x-auto">
-                <button onclick="setSaga('all')" id="tab-saga-all" class="whitespace-nowrap flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all">Universo Completo</button>
-                <button onclick="setSaga('Infinito')" id="tab-saga-Infinito" class="whitespace-nowrap flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all">Saga Infinito</button>
-                <button onclick="setSaga('Multiverso')" id="tab-saga-Multiverso" class="whitespace-nowrap flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all">Saga Multiverso</button>
+    <main class="max-w-6xl mx-auto px-4 py-6">
+        <div class="glass-panel rounded-xl p-2 mb-6 flex flex-col md:flex-row justify-between items-center gap-4 shadow-xl">
+            <div class="flex bg-slate-950 rounded-lg p-1 border border-slate-800/50 w-full md:w-auto">
+                <button onclick="App.setSaga('all')" id="tab-saga-all" class="font-oswald flex-1 px-4 py-2 text-sm uppercase tracking-wide rounded-md transition-all">Universo Completo</button>
+                <button onclick="App.setSaga('Infinito')" id="tab-saga-Infinito" class="font-oswald flex-1 px-4 py-2 text-sm uppercase tracking-wide rounded-md transition-all">Saga Infinito</button>
+                <button onclick="App.setSaga('Multiverso')" id="tab-saga-Multiverso" class="font-oswald flex-1 px-4 py-2 text-sm uppercase tracking-wide rounded-md transition-all">Saga Multiverso</button>
             </div>
-            <div class="flex gap-2 w-full lg:w-auto justify-end">
-                <button onclick="setStatus('all')" id="btn-status-all" class="px-4 py-2 text-sm font-medium rounded-lg transition-all">Todo</button>
-                <button onclick="setStatus('pending')" id="btn-status-pending" class="px-4 py-2 text-sm font-medium rounded-lg transition-all text-slate-400 hover:text-white">Pendientes</button>
-                <button onclick="setStatus('watched')" id="btn-status-watched" class="px-4 py-2 text-sm font-medium rounded-lg transition-all text-slate-400 hover:text-white">Vistas</button>
+            <div class="flex flex-wrap gap-2 w-full md:w-auto justify-end items-center">
+                <div class="flex items-center bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 h-[34px]">
+                    <i class="fa-solid fa-arrow-down-a-z text-slate-500 text-xs mr-2"></i>
+                    <select id="sort-select" onchange="App.setSortOrder(this.value)" class="bg-transparent text-slate-300 text-sm font-medium focus:outline-none cursor-pointer">
+                        <option value="narrative">Orden Narrativo</option>
+                        <option value="release">Orden de Estreno</option>
+                    </select>
+                </div>
+                <button onclick="App.setStatus('all')" id="btn-status-all" class="font-oswald px-3 py-1.5 text-sm tracking-wide rounded-lg transition-all">Todo</button>
+                <button onclick="App.setStatus('pending')" id="btn-status-pending" class="font-oswald px-3 py-1.5 text-sm tracking-wide rounded-lg transition-all text-slate-400 hover:text-white">Pendientes</button>
+                <button onclick="App.setStatus('watched')" id="btn-status-watched" class="font-oswald px-3 py-1.5 text-sm tracking-wide rounded-lg transition-all text-slate-400 hover:text-white">Vistas</button>
             </div>
         </div>
-        <section id="movies-container" class="grid grid-cols-1 lg:grid-cols-2 gap-4"></section>
+
+        <section id="movies-container" class="grid grid-cols-1 lg:grid-cols-2 gap-6"></section>
     </main>
+
+    <button onclick="App.toggleInventory()" class="fixed bottom-6 right-6 z-50 bg-amber-500 hover:bg-amber-400 text-slate-900 w-14 h-14 rounded-full shadow-[0_0_20px_rgba(245,158,11,0.6)] flex items-center justify-center text-xl transition-all hover:scale-110 active:scale-95 border-2 border-amber-300">
+        <i class="fa-solid fa-vault"></i>
+    </button>
+
+    <div id="inventory-modal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md z-[100] flex items-center justify-center p-4 transition-opacity duration-300">
+        <div class="bg-slate-900 border border-slate-700 rounded-xl w-full max-w-2xl max-h-[80vh] flex flex-col shadow-2xl shadow-amber-500/10">
+            <div class="p-4 border-b border-slate-800 flex justify-between items-center glass-panel rounded-t-xl">
+                <h2 class="font-oswald text-2xl font-bold text-amber-500 uppercase tracking-wide"><i class="fa-solid fa-vault mr-2"></i> Bóveda de Artefactos</h2>
+                <button onclick="App.toggleInventory()" class="text-slate-400 hover:text-white text-2xl transition-colors"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto" id="inventory-list"></div>
+        </div>
+    </div>
 
     <script src="data.js"></script>
     <script src="app.js"></script>
-    
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').then(reg => {
-                    console.log('S.H.I.E.L.D. Service Worker activo.', reg.scope);
-                }).catch(err => {
-                    console.error('Error al registrar el radar:', err);
-                });
-            });
-        }
-    </script>
 </body>
 </html>
