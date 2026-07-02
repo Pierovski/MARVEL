@@ -1,25 +1,51 @@
-const CACHE_NAME = 'marvel-tracker-v1.4';
+const CACHE_NAME = 'marvel-tracker-v2.0';
 const urlsToCache = [
     './',
     './index.html',
     './app.js',
     './data.js',
     './manifest.json',
-    './imagen.png' // ¡Corregido! Antes decía image.png
+    './imagen.png'
 ];
 
-// Instalación del Service Worker y guardado en caché
+// 1. INSTALACIÓN: Obligamos al Service Worker a instalarse de inmediato sin esperar
 self.addEventListener('install', event => {
+    self.skipWaiting(); 
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => cache.addAll(urlsToCache))
     );
 });
 
-// Interceptar peticiones para que funcione offline
+// 2. ACTIVACIÓN: Autolimpieza de cachés fantasmas del pasado
+self.addEventListener('activate', event => {
+    event.waitUntil(
+        caches.keys().then(cacheNames => {
+            return Promise.all(
+                cacheNames.map(cache => {
+                    // Si el caché antiguo no coincide con el actual, lo destruye
+                    if (cache !== CACHE_NAME) {
+                        return caches.delete(cache);
+                    }
+                })
+            );
+        })
+    );
+    self.clients.claim(); // Toma el control de la página instantáneamente
+});
+
+// 3. INTERCEPTOR (ESTRATEGIA NETWORK FIRST)
 self.addEventListener('fetch', event => {
     event.respondWith(
-        caches.match(event.request)
-            .then(response => response || fetch(event.request))
+        // Intentamos ir a internet (o tu localhost) primero para traer lo más nuevo
+        fetch(event.request)
+            .then(response => {
+                // Si la red funciona, devolvemos el archivo fresco
+                return response;
+            })
+            .catch(() => {
+                // Si la red falla (estás offline), sacamos el archivo del caché de emergencia
+                return caches.match(event.request);
+            })
     );
 });

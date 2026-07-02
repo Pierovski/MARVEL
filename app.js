@@ -36,8 +36,8 @@ const UI = {
         const watchedCount = watchedInSaga.length;
 
         const labels = { 'all': 'Progreso Total', 'Infinito': 'Progreso Infinito', 'Multiverso': 'Progreso Multiverso' };
-        document.getElementById('stats-label').innerText = labels[State.filters.saga];
-        document.getElementById('progress-stats').innerText = `${watchedCount} / ${totalInSaga}`;
+        document.getElementById('stats-label') ? document.getElementById('stats-label').innerText = labels[State.filters.saga] : null;
+        document.getElementById('progress-stats').innerText = `${watchedCount}/${totalInSaga}`;
         
         let totalMins = watchedInSaga.reduce((acc, movie) => {
             if (movie.type.includes('Serie')) {
@@ -53,18 +53,20 @@ const UI = {
     },
 
     updateNavigationTabs() {
+        // Estilos limpios sin cajas para las Sagas
         ['all', 'Infinito', 'Multiverso'].forEach(s => {
             const btn = document.getElementById(`tab-saga-${s}`);
             btn.className = (s === State.filters.saga) 
-                ? "font-oswald flex-1 px-4 py-2 text-sm uppercase tracking-wide font-bold rounded-md transition-all bg-marvel text-white shadow-[0_0_15px_var(--color-glow)] duration-500"
-                : "font-oswald flex-1 px-4 py-2 text-sm uppercase tracking-wide rounded-md transition-all text-slate-400 hover:bg-slate-800 hover:text-white";
+                ? "snap-start shrink-0 pb-1.5 text-sm font-oswald uppercase tracking-wider transition-all border-b-2 border-marvel text-white drop-shadow-[0_0_8px_var(--color-glow)]"
+                : "snap-start shrink-0 pb-1.5 text-sm font-oswald uppercase tracking-wider transition-all border-b-2 border-transparent text-slate-500 hover:text-slate-300";
         });
 
+        // Píldoras compactas para los Estados
         ['all', 'pending', 'watched'].forEach(s => {
             const btn = document.getElementById(`btn-status-${s}`);
             btn.className = (s === State.filters.status)
-                ? "font-oswald px-3 py-1.5 text-sm tracking-wide font-bold rounded-lg transition-all bg-slate-800 text-white border border-slate-600 shadow-md"
-                : "font-oswald px-3 py-1.5 text-sm tracking-wide rounded-lg transition-all text-slate-400 hover:text-white bg-transparent";
+                ? "shrink-0 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full transition-all bg-slate-800 text-white border border-slate-600 shadow-md"
+                : "shrink-0 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full transition-all text-slate-500 hover:text-slate-300 bg-transparent border border-transparent";
         });
     },
 
@@ -73,28 +75,22 @@ const UI = {
         const card = document.getElementById(`card-${id}`);
         const btnWatch = document.getElementById(`btn-watch-${id}`);
         const iconWatch = document.getElementById(`icon-watch-${id}`);
-        const spoilerOverlay = document.getElementById(`spoiler-overlay-${id}`);
-        const detailsContainer = document.getElementById(`details-container-${id}`);
         
         if(!card) return;
 
         if(isWatched) {
-            card.classList.add('border-emerald-500/40', 'opacity-90');
-            card.classList.remove('border-slate-700');
-            btnWatch.className = "tech-tooltip flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 transition-all shadow-md hover:scale-105 bg-emerald-500/20 border-emerald-500 text-emerald-400";
-            iconWatch.className = "fa-solid sm:fa-xl fa-check";
-            if(spoilerOverlay) spoilerOverlay.classList.add('hidden');
-            if(detailsContainer) detailsContainer.classList.remove('opacity-30', 'pointer-events-none', 'select-none');
+            card.style.order = '1'; 
+            card.classList.add('border-emerald-500/40', 'opacity-60', 'scale-[0.98]'); 
+            card.classList.remove('border-slate-800');
+            btnWatch.className = "tech-tooltip flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all shadow-md hover:scale-105 bg-emerald-500/20 border-emerald-500 text-emerald-400";
+            iconWatch.className = "fa-solid fa-check";
         } else {
-            card.classList.remove('border-emerald-500/40', 'opacity-90');
-            card.classList.add('border-slate-700');
-            btnWatch.className = "tech-tooltip flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 transition-all shadow-md hover:scale-105 bg-slate-900 border-slate-700 text-slate-400 hover:border-marvel hover:text-marvel";
-            iconWatch.className = "fa-solid sm:fa-xl fa-power-off";
-            if(spoilerOverlay) spoilerOverlay.classList.remove('hidden');
-            if(detailsContainer) detailsContainer.classList.add('opacity-30', 'pointer-events-none', 'select-none');
+            card.style.order = '0'; 
+            card.classList.remove('border-emerald-500/40', 'opacity-60', 'scale-[0.98]');
+            card.classList.add('border-slate-800');
+            btnWatch.className = "tech-tooltip flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all shadow-md hover:scale-105 bg-slate-800/80 border-slate-600 text-slate-400 hover:border-marvel hover:text-marvel";
+            iconWatch.className = "fa-solid fa-power-off";
         }
-
-        if(State.filters.status !== 'all') this.renderGrid();
     },
 
     renderGrid() {
@@ -122,7 +118,7 @@ const UI = {
             const isWatched = State.data.watched.includes(movie.id);
             const userNote = this.escapeHTML(State.data.notes[movie.id] || '');
             const userRating = State.data.ratings[movie.id] || 0;
-            const hiddenList = movie.hiddenDetails.map(detail => `<li>- ${this.escapeHTML(detail)}</li>`).join('');
+            const hiddenList = movie.hiddenDetails.map(detail => `<li class="flex items-start"><span class="text-marvel mr-2">-</span> <span>${this.escapeHTML(detail)}</span></li>`).join('');
             
             let starsHTML = '';
             for(let i=1; i<=5; i++) {
@@ -131,87 +127,80 @@ const UI = {
 
             const card = document.createElement('div');
             card.id = `card-${movie.id}`;
-            card.className = `movie-card flex flex-col border rounded-xl overflow-hidden transition-all duration-500 card-glow shadow-xl ${isWatched ? 'border-emerald-500/40 opacity-90' : 'border-slate-700 bg-slate-950/50 backdrop-blur-sm'}`;
+            card.style.order = isWatched ? '1' : '0';
+            card.className = `movie-card flex flex-col border rounded-xl overflow-hidden transition-all duration-500 bg-slate-950/60 backdrop-blur-sm ${isWatched ? 'border-emerald-500/40 opacity-60 scale-[0.98]' : 'border-slate-800 hover:border-slate-600'}`;
             
             card.innerHTML = `
-                <div class="p-5 sm:p-6 cursor-pointer hover:bg-slate-800/30 transition-colors group relative" onclick="App.toggleDetails('${movie.id}')">
-                    <div class="flex justify-between items-start gap-4">
-                        <div class="flex-grow z-10">
-                            <div class="flex flex-wrap gap-2 mb-3">
-                                <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-amber-500 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded shadow-sm">${this.escapeHTML(movie.phase)}</span>
-                                <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-cyan-400 bg-cyan-400/10 border border-cyan-400/20 px-2 py-0.5 rounded flex items-center gap-1 shadow-sm">
-                                    <i class="fa-solid ${movie.type.includes('Serie') ? 'fa-tv' : 'fa-film'}"></i> ${this.escapeHTML(movie.type)}
-                                </span>
-                            </div>
-                            <h3 class="font-oswald text-xl sm:text-2xl font-bold text-slate-100 leading-tight group-hover:text-marvel transition-colors duration-300 uppercase">${this.escapeHTML(movie.title)}</h3>
-                            <div class="flex flex-wrap gap-3 sm:gap-4 mt-3">
-                                <p class="text-[11px] sm:text-xs font-medium text-slate-400"><i class="fa-regular fa-clock text-emerald-500 mr-1"></i> ${movie.duration}</p>
-                                <p class="text-[11px] sm:text-xs font-medium text-slate-400"><i class="fa-solid fa-location-crosshairs text-blue-400 mr-1"></i> ${this.escapeHTML(movie.setting)}</p>
-                            </div>
+                <div class="p-5 cursor-pointer hover:bg-slate-800/40 transition-colors flex flex-col gap-3 relative group" onclick="App.toggleDetails('${movie.id}')">
+                    <div class="flex justify-between items-start w-full">
+                        <div class="flex flex-wrap gap-2">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-amber-500 bg-amber-500/10 border border-amber-500/20 px-2 py-1 rounded shadow-sm">${this.escapeHTML(movie.phase)}</span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-cyan-400 bg-cyan-400/10 border border-cyan-400/20 px-2 py-1 rounded flex items-center shadow-sm">
+                                <i class="fa-solid ${movie.type.includes('Serie') ? 'fa-tv' : 'fa-film'} mr-1.5"></i>${this.escapeHTML(movie.type)}
+                            </span>
                         </div>
-                        
-                        <div class="flex flex-col items-end gap-3 shrink-0 z-10">
-                            <button data-tip="${isWatched ? 'Desmarcar' : 'Marcar Vista'}" id="btn-watch-${movie.id}" onclick="event.stopPropagation(); App.toggleWatched('${movie.id}')" class="tech-tooltip flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 transition-all shadow-md hover:scale-105 ${isWatched ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-marvel hover:text-marvel'}">
-                                <i id="icon-watch-${movie.id}" class="fa-solid sm:fa-xl ${isWatched ? 'fa-check' : 'fa-power-off'}"></i>
-                            </button>
-                            <div class="bg-slate-800/50 rounded-full w-8 h-8 flex items-center justify-center border border-slate-700/50">
-                                <i id="icon-expand-${movie.id}" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300 text-sm"></i>
-                            </div>
+                        <button data-tip="${isWatched ? 'Desmarcar' : 'Marcar Vista'}" id="btn-watch-${movie.id}" onclick="event.stopPropagation(); App.toggleWatched('${movie.id}')" class="tech-tooltip flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all shadow-md hover:scale-105 shrink-0 ${isWatched ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : 'bg-slate-800/80 border-slate-600 text-slate-400 hover:border-marvel hover:text-marvel'}">
+                            <i id="icon-watch-${movie.id}" class="fa-solid ${isWatched ? 'fa-check' : 'fa-power-off'}"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="mt-1">
+                        <h3 class="font-oswald text-xl sm:text-2xl font-bold text-slate-100 leading-tight group-hover:text-marvel transition-colors duration-300 uppercase">${this.escapeHTML(movie.title)}</h3>
+                        <div class="flex items-center gap-4 mt-3 text-xs text-slate-400 font-medium">
+                            <span class="flex items-center"><i class="fa-regular fa-clock text-slate-500 mr-1.5"></i> ${movie.duration}</span>
+                            <span class="flex items-center"><i class="fa-solid fa-location-crosshairs text-slate-500 mr-1.5"></i> ${this.escapeHTML(movie.setting)}</span>
+                            <span class="ml-auto bg-slate-800/60 rounded-full w-7 h-7 flex items-center justify-center border border-slate-700/50">
+                                <i id="icon-expand-${movie.id}" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300 text-[10px]"></i>
+                            </span>
                         </div>
                     </div>
                 </div>
                 
-                <div id="details-${movie.id}" class="hidden border-t border-slate-800/80 bg-slate-950/90 relative w-full">
-                    <div class="bg-blue-900/10 border-b border-blue-500/20 p-4 px-6 flex items-start gap-3">
+                <div id="details-${movie.id}" class="hidden border-t border-slate-800 bg-slate-900/40 relative w-full">
+                    <div class="bg-blue-900/10 border-b border-slate-800 px-5 py-3 text-sm text-blue-200/80 flex items-start gap-2">
                         <i class="fa-solid fa-timeline text-blue-400 mt-1"></i>
-                        <p class="text-sm text-blue-100/80 leading-relaxed"><strong class="text-blue-400 font-oswald uppercase tracking-wide">Línea Temporal:</strong> ${this.escapeHTML(movie.timelineReason)}</p>
+                        <p><strong>Línea Temporal:</strong> ${this.escapeHTML(movie.timelineReason)}</p>
                     </div>
 
-                    <div class="p-6 space-y-5 relative">
-                        <div id="spoiler-overlay-${movie.id}" class="${!isWatched ? 'absolute inset-0 z-10 flex items-center justify-center backdrop-blur-md bg-slate-950/70' : 'hidden'}">
-                            <div class="bg-slate-900 border border-slate-700 px-5 py-3 rounded-lg text-sm text-slate-300 shadow-[0_0_30px_rgba(0,0,0,0.8)] flex items-center gap-3 font-medium">
-                                <i class="fa-solid fa-lock text-marvel"></i> Marca como vista para revelar Archivos Clasificados
+                    <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-5">
+                            <div>
+                                <h4 class="font-oswald text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Sinopsis / Expediente</h4>
+                                <p class="text-sm text-slate-300 leading-relaxed">${this.escapeHTML(movie.summary)}</p>
+                            </div>
+                            <div class="bg-slate-800/30 rounded-lg p-3.5 border-l-2 border-marvel">
+                                <p class="text-[13px] text-slate-300 leading-relaxed">
+                                    <strong class="text-marvel uppercase tracking-wide text-xs">Nivel 7:</strong> ${this.escapeHTML(movie.preData)}
+                                </p>
                             </div>
                         </div>
                         
-                        <div id="details-container-${movie.id}" class="${!isWatched ? 'opacity-30 pointer-events-none select-none' : ''} transition-opacity duration-500">
+                        <div class="space-y-5">
+                            <div class="bg-slate-800/30 rounded-lg p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 border border-slate-800">
+                                <span class="text-xs font-bold text-slate-400 uppercase"><i class="fa-solid fa-clapperboard mr-1.5"></i> Post-Créditos (${movie.postCredits})</span>
+                                <span class="text-[11px] font-medium text-slate-300 bg-slate-800/80 px-2.5 py-1 rounded">${this.escapeHTML(movie.postCreditDesc)}</span>
+                            </div>
                             <div>
-                                <h4 class="font-oswald text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">Sinopsis / Expediente</h4>
-                                <p class="text-sm text-slate-300 leading-relaxed">${this.escapeHTML(movie.summary)}</p>
-                            </div>
-
-                            <div class="bg-slate-900/80 rounded-lg p-4 border-l-4 border-marvel transition-colors duration-300 mt-5 shadow-inner">
-                                <p class="text-sm text-slate-300 leading-relaxed">
-                                    <strong class="font-oswald uppercase tracking-wide text-marvel"><i class="fa-solid fa-circle-exclamation mr-1"></i> Recomendación Nivel 7:</strong><br>
-                                    ${this.escapeHTML(movie.preData)}
-                                </p>
-                            </div>
-                            
-                            <div class="flex flex-col sm:flex-row sm:items-center justify-between bg-slate-900 rounded-lg p-4 border border-slate-800 mt-5 gap-3">
-                                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider"><i class="fa-solid fa-clapperboard mr-1"></i> Post-Créditos (${movie.postCredits}):</span>
-                                <span class="text-xs font-medium text-slate-200 bg-slate-800 px-3 py-1.5 rounded border border-slate-700">${this.escapeHTML(movie.postCreditDesc)}</span>
-                            </div>
-                            
-                            <div class="bg-slate-900/50 rounded-lg p-4 border border-slate-800/50 mt-5">
-                                <h4 class="font-oswald text-sm font-bold text-purple-400 uppercase tracking-wide mb-3"><i class="fa-solid fa-eye-low-vision mr-1"></i> Detalles Ocultos:</h4>
-                                <ul class="text-sm text-slate-400 space-y-2 pl-1">${hiddenList}</ul>
+                                <h4 class="font-oswald text-xs font-bold text-purple-400/80 uppercase tracking-widest mb-2"><i class="fa-solid fa-eye-low-vision mr-1.5"></i> Detalles Ocultos</h4>
+                                <ul class="text-[13px] text-slate-400 space-y-1.5">${hiddenList}</ul>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="bg-slate-900 border-t border-slate-800 p-5 relative z-20">
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-3">
-                            <label class="font-oswald text-sm font-bold text-slate-400 uppercase tracking-wide flex items-center gap-2">
-                                <i class="fa-solid fa-book-open text-amber-500/70"></i> Libreta de Campo:
+                    <div class="px-5 pb-5">
+                        <div class="flex justify-between items-center mb-3">
+                            <label class="font-oswald text-xs font-bold text-slate-500 uppercase flex items-center gap-2">
+                                <i class="fa-solid fa-book-open text-amber-500/60"></i> Libreta de Campo
                             </label>
-                            <div class="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
-                                <div class="flex gap-1 text-base">${starsHTML}</div>
-                                <button data-tip="Archivar Registro" id="btn-note-${movie.id}" onclick="App.saveNote('${movie.id}')" class="tech-tooltip text-xs font-bold tracking-wide uppercase text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded transition-colors flex items-center gap-2 border border-slate-700 hover:border-slate-500">
-                                    <i class="fa-solid fa-floppy-disk"></i> Guardar
-                                </button>
-                            </div>
+                            <div class="flex gap-1.5 items-center text-sm">${starsHTML}</div>
                         </div>
-                        <textarea id="note-${movie.id}" class="w-full bg-[#0b1121] border-b-2 border-slate-700 rounded-t p-4 text-sm text-slate-300 placeholder-slate-600 focus:outline-none focus:border-marvel transition-all resize-y min-h-[100px] leading-relaxed shadow-inner" style="background-image: repeating-linear-gradient(transparent, transparent 27px, rgba(255,255,255,0.03) 28px);" placeholder="Registra tus observaciones operativas aquí...">${userNote}</textarea>
+                        <div class="relative">
+                            <textarea id="note-${movie.id}" class="w-full bg-[#0b1121] border border-slate-700/80 rounded p-4 pb-12 text-sm text-slate-300 placeholder-slate-600 focus:outline-none focus:border-marvel/50 transition-colors resize-y min-h-[90px] shadow-inner" placeholder="Registra tus observaciones...">${userNote}</textarea>
+                            
+                            <button id="btn-note-${movie.id}" onclick="App.saveNote('${movie.id}')" class="absolute bottom-3 right-3 text-[11px] font-bold tracking-wide uppercase bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white px-3 py-1.5 rounded transition-colors border border-slate-700 flex items-center gap-1.5">
+                                <i class="fa-solid fa-floppy-disk"></i> Guardar
+                            </button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -267,14 +256,28 @@ const App = {
     },
     setStatus(status) { State.filters.status = status; UI.updateNavigationTabs(); UI.renderGrid(); },
     setSortOrder(order) { State.filters.sort = order; Storage.save('sort', order); UI.renderGrid(); },
+    
     toggleWatched(id) {
         const index = State.data.watched.indexOf(id);
         if (index === -1) State.data.watched.push(id); 
         else State.data.watched.splice(index, 1);
         Storage.save('watched', State.data.watched);
-        UI.updateStats(); UI.updateCardTargeted(id);
+        
+        UI.updateStats(); 
+        UI.updateCardTargeted(id);
         if(navigator.vibrate) navigator.vibrate(50);
+
+        if (State.filters.status !== 'all') {
+            const card = document.getElementById(`card-${id}`);
+            if (card) {
+                card.classList.add('opacity-0', 'scale-90');
+                setTimeout(() => {
+                    UI.renderGrid();
+                }, 400);
+            }
+        }
     },
+    
     rateMovie(id, rating) { State.data.ratings[id] = rating; Storage.save('ratings', State.data.ratings); UI.renderGrid(); },
     saveNote(id) {
         const textarea = document.getElementById(`note-${id}`);
@@ -285,7 +288,7 @@ const App = {
         
         const btn = document.getElementById(`btn-note-${id}`);
         const originalHTML = btn.innerHTML;
-        btn.innerHTML = '<i class="fa-solid fa-check"></i> Archivado';
+        btn.innerHTML = '<i class="fa-solid fa-check"></i>';
         btn.classList.replace('text-slate-400', 'text-emerald-400');
         btn.classList.add('border-emerald-500/50');
         if(navigator.vibrate) navigator.vibrate([30, 50, 30]);
