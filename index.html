@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MARVEL | Archivo Multiversal</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#020617">
+    <meta name="theme-color" content="#09090b">
     <meta name="apple-mobile-web-app-capable" content="yes">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,73 +29,92 @@
     <style>
         :root { 
             --color-marvel: #dc2626; 
-            --color-glow: rgba(220, 38, 38, 0.15);
+            --color-glow: rgba(220, 38, 38, 0.2);
+            --bg-color: #09090b; /* Tema dinámico base */
         }
         
-        body { background-color: #020617; background-attachment: fixed; }
+        /* Transición de tema dinámico */
+        body { 
+            background-color: var(--bg-color); 
+            background-attachment: fixed; 
+            transition: background-color 1s ease;
+        }
         
-        /* Ocultar barra de scroll para limpieza visual */
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
         
         .tech-tooltip { position: relative; }
         .tech-tooltip:hover::after {
             content: attr(data-tip);
             position: absolute; bottom: 120%; left: 50%; transform: translateX(-50%);
-            background: rgba(15, 23, 42, 0.95); color: #94a3b8; font-size: 0.7rem; font-family: 'Oswald', sans-serif;
+            background: rgba(9, 9, 11, 0.95); color: #a1a1aa; font-size: 0.7rem; font-family: 'Oswald', sans-serif;
             text-transform: uppercase; letter-spacing: 1px; padding: 4px 8px; border-radius: 4px;
             border: 1px solid var(--color-marvel); white-space: nowrap; z-index: 50;
         }
 
-        .card-glow { transition: all 0.4s ease; background: linear-gradient(145deg, rgba(15,23,42,0.8) 0%, rgba(2,6,23,1) 100%); }
+        .card-glow { transition: all 0.4s ease; background: linear-gradient(145deg, rgba(24,24,27,0.8) 0%, rgba(9,9,11,1) 100%); }
         .card-glow:hover { box-shadow: 0 0 20px -5px var(--color-marvel); border-color: var(--color-marvel); }
+
+        /* Animación para las notificaciones de logros */
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .toast-enter { animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
     </style>
 </head>
-<body class="bg-parallax text-slate-100 min-h-screen font-roboto antialiased selection:bg-marvel selection:text-white pb-24 overflow-x-hidden">
+<body class="bg-parallax text-zinc-100 min-h-screen font-roboto antialiased selection:bg-marvel selection:text-white pb-24 overflow-x-hidden">
     
-    <header class="bg-[#020617]/90 backdrop-blur-xl border-b border-white/5 sticky top-0 z-50 transition-colors duration-500">
-        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
-            <h1 class="font-oswald bg-marvel text-white font-bold tracking-wider px-3 py-1 text-xl rounded shadow-[0_0_15px_var(--color-glow)] uppercase transition-all duration-500">MARVEL</h1>
+    <div id="toast-container" class="fixed top-20 right-4 z-[100] flex flex-col gap-3 pointer-events-none"></div>
+
+    <header class="bg-black/80 backdrop-blur-xl border-b border-white/5 sticky top-0 z-50 transition-colors duration-500">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center gap-4">
+            <div class="flex items-center gap-4">
+                <h1 class="font-oswald bg-marvel text-white font-bold tracking-wider px-3 py-1 text-xl rounded shadow-[0_0_15px_var(--color-glow)] uppercase transition-all duration-500">MARVEL</h1>
+                
+                <div id="gem-tracker" class="hidden sm:flex items-center gap-1.5 bg-zinc-900/50 px-3 py-1 rounded-full border border-white/5">
+                    </div>
+            </div>
             
-            <div class="flex items-center gap-4 text-xs font-medium text-slate-400">
+            <div class="flex items-center gap-3 text-xs font-medium text-zinc-400 shrink-0">
                 <div class="flex items-center gap-1.5" data-tip="Progreso Actual">
                     <i class="fa-solid fa-crosshairs text-marvel transition-colors duration-500"></i>
                     <span id="progress-stats" class="text-white font-oswald text-sm tracking-wide">0/0</span>
                 </div>
-                <div class="w-[1px] h-4 bg-slate-700"></div>
+                <div class="w-[1px] h-4 bg-zinc-800"></div>
                 <div class="flex items-center gap-1.5" data-tip="Tiempo de Visualización">
-                    <i class="fa-regular fa-clock text-slate-500"></i>
+                    <i class="fa-regular fa-clock text-zinc-500"></i>
                     <span id="time-stats" class="text-white font-oswald text-sm tracking-wide">0h 0m</span>
                 </div>
             </div>
         </div>
     </header>
 
-    <div class="sticky top-[52px] z-40 bg-[#020617]/95 backdrop-blur-md pt-4 pb-3 border-b border-slate-800/80">
-        <div class="max-w-6xl mx-auto px-4">
-            <div class="flex overflow-x-auto hide-scrollbar gap-6 snap-x mb-4">
-                <button onclick="App.setSaga('all')" id="tab-saga-all" class="snap-start shrink-0 pb-1.5 text-sm font-oswald uppercase tracking-wider transition-all border-b-2">Universo Completo</button>
-                <button onclick="App.setSaga('Infinito')" id="tab-saga-Infinito" class="snap-start shrink-0 pb-1.5 text-sm font-oswald uppercase tracking-wider transition-all border-b-2 border-transparent text-slate-500">Saga Infinito</button>
-                <button onclick="App.setSaga('Multiverso')" id="tab-saga-Multiverso" class="snap-start shrink-0 pb-1.5 text-sm font-oswald uppercase tracking-wider transition-all border-b-2 border-transparent text-slate-500">Saga Multiverso</button>
+    <div class="bg-[#09090b]/95 backdrop-blur-md sticky top-[52px] z-40 border-b border-white/5 shadow-xl pb-3 pt-3 transition-colors duration-1000" id="nav-container">
+        <div class="max-w-6xl mx-auto px-4 flex flex-col gap-3">
+            <div class="flex overflow-x-auto hide-scrollbar gap-2 snap-x">
+                <button onclick="App.setSaga('all')" id="tab-saga-all" class="snap-start shrink-0 font-oswald px-5 py-2 text-xs uppercase tracking-wider rounded-full transition-all border border-transparent">Universo Completo</button>
+                <button onclick="App.setSaga('Infinito')" id="tab-saga-Infinito" class="snap-start shrink-0 font-oswald px-5 py-2 text-xs uppercase tracking-wider rounded-full transition-all border border-transparent">Saga Infinito</button>
+                <button onclick="App.setSaga('Multiverso')" id="tab-saga-Multiverso" class="snap-start shrink-0 font-oswald px-5 py-2 text-xs uppercase tracking-wider rounded-full transition-all border border-transparent">Saga Multiverso</button>
             </div>
 
-            <div class="flex justify-between items-center">
-                <div class="flex items-center text-slate-400 hover:text-white transition-colors bg-slate-900/40 px-3 py-1.5 rounded-lg border border-slate-800/50">
-                    <i class="fa-solid fa-arrow-down-short-wide text-[10px] mr-2 text-marvel"></i>
-                    <select id="sort-select" onchange="App.setSortOrder(this.value)" class="bg-transparent text-[11px] font-medium focus:outline-none cursor-pointer appearance-none uppercase tracking-wide font-oswald">
-                        <option value="narrative" class="bg-slate-900">Orden Narrativo</option>
-                        <option value="release" class="bg-slate-900">Orden Estreno</option>
+            <div class="flex justify-between items-center gap-2">
+                <div class="flex items-center bg-zinc-900/80 border border-zinc-800 rounded-lg px-3 py-1.5 h-8 shrink-0">
+                    <i class="fa-solid fa-arrow-down-a-z text-zinc-500 text-[10px] mr-2"></i>
+                    <select id="sort-select" onchange="App.setSortOrder(this.value)" class="bg-transparent text-zinc-300 text-xs font-medium focus:outline-none cursor-pointer">
+                        <option value="narrative" class="bg-zinc-900">Narrativo</option>
+                        <option value="release" class="bg-zinc-900">Estreno</option>
                     </select>
                 </div>
-
-                <div class="flex gap-1.5 overflow-x-auto hide-scrollbar">
-                    <button onclick="App.setStatus('all')" id="btn-status-all" class="shrink-0 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full transition-all">Todo</button>
-                    <button onclick="App.setStatus('pending')" id="btn-status-pending" class="shrink-0 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full transition-all">Pendientes</button>
-                    <button onclick="App.setStatus('watched')" id="btn-status-watched" class="shrink-0 text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full transition-all">Vistas</button>
+                
+                <div class="flex bg-zinc-900/80 rounded-lg p-1 border border-zinc-800 overflow-x-auto hide-scrollbar">
+                    <button onclick="App.setStatus('all')" id="btn-status-all" class="shrink-0 font-oswald px-4 py-1 text-xs tracking-wide rounded transition-all">Todo</button>
+                    <button onclick="App.setStatus('pending')" id="btn-status-pending" class="shrink-0 font-oswald px-4 py-1 text-xs tracking-wide rounded transition-all text-zinc-400 hover:text-white">Pendientes</button>
+                    <button onclick="App.setStatus('watched')" id="btn-status-watched" class="shrink-0 font-oswald px-4 py-1 text-xs tracking-wide rounded transition-all text-zinc-400 hover:text-white">Vistas</button>
                 </div>
             </div>
         </div>
@@ -105,17 +124,33 @@
         <section id="movies-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></section>
     </main>
 
-    <button onclick="App.toggleInventory()" data-tip="Bóveda de Artefactos" class="tech-tooltip fixed bottom-6 right-6 z-50 bg-amber-500 hover:bg-amber-400 text-slate-900 w-14 h-14 rounded-full shadow-[0_0_20px_rgba(245,158,11,0.4)] flex items-center justify-center text-xl transition-all hover:scale-110 active:scale-95 border border-amber-300">
+    <button onclick="App.toggleInventory()" data-tip="Bóveda de Artefactos" class="tech-tooltip fixed bottom-6 right-6 z-50 bg-amber-500 hover:bg-amber-400 text-black w-14 h-14 rounded-full shadow-[0_0_20px_rgba(245,158,11,0.4)] flex items-center justify-center text-xl transition-all hover:scale-110 active:scale-95 border border-amber-300">
         <i class="fa-solid fa-vault"></i>
     </button>
 
     <div id="inventory-modal" class="hidden fixed inset-0 bg-black/95 backdrop-blur-xl z-[100] flex items-center justify-center p-4 transition-opacity duration-300">
-        <div class="bg-slate-950 border border-slate-800 rounded-2xl w-full max-w-2xl max-h-[80vh] flex flex-col shadow-2xl">
-            <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-900/50 rounded-t-2xl">
+        <div class="bg-zinc-950 border border-zinc-800 rounded-2xl w-full max-w-3xl max-h-[85vh] flex flex-col shadow-2xl">
+            <div class="p-5 border-b border-zinc-800 flex justify-between items-center bg-zinc-900/50 rounded-t-2xl shrink-0">
                 <h2 class="font-oswald text-xl font-bold text-amber-500 uppercase tracking-wider"><i class="fa-solid fa-vault mr-2"></i> Bóveda Multiversal</h2>
-                <button onclick="App.toggleInventory()" class="text-slate-500 hover:text-white text-xl transition-colors"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="App.toggleInventory()" class="text-zinc-500 hover:text-white text-xl transition-colors"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="p-6 overflow-y-auto hide-scrollbar" id="inventory-list"></div>
+            
+            <div class="p-6 overflow-y-auto hide-scrollbar space-y-8">
+                <div class="sm:hidden">
+                    <h3 class="font-oswald text-sm text-zinc-400 uppercase tracking-widest mb-3"><i class="fa-solid fa-hand mr-1"></i> Gemas del Infinito</h3>
+                    <div id="mobile-gem-tracker" class="flex gap-2 bg-zinc-900/30 p-3 rounded-xl border border-zinc-800/50 justify-around"></div>
+                </div>
+
+                <div>
+                    <h3 class="font-oswald text-sm text-zinc-400 uppercase tracking-widest mb-4"><i class="fa-solid fa-box-open mr-1"></i> Artefactos Extraídos</h3>
+                    <div id="inventory-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"></div>
+                </div>
+
+                <div>
+                    <h3 class="font-oswald text-sm text-zinc-400 uppercase tracking-widest mb-4"><i class="fa-solid fa-medal mr-1"></i> Logros Clasificados</h3>
+                    <div id="achievements-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                </div>
+            </div>
         </div>
     </div>
 
