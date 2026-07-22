@@ -1,4 +1,4 @@
-const CACHE_NAME = 'marvel-tracker-v2.1';
+const CACHE_NAME = 'marvel-tracker-v3';
 const urlsToCache = [
     './',
     './index.html',
