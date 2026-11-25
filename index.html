@@ -2,44 +2,40 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MARVEL | Archivo Multiversal</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#030308">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    
+
     <!-- Fuentes Sci-Fi y Modernas -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Orbitron:wght@600;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: { marvel: 'var(--color-marvel)', glow: 'var(--color-glow)' },
-                    fontFamily: { 
+                    fontFamily: {
                         display: ['Orbitron', 'sans-serif'],
                         tech: ['Rajdhani', 'sans-serif'],
-                        body: ['Inter', 'sans-serif'] 
-                    },
-                    backgroundImage: { 
-                        'glass': 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%)'
+                        body: ['Inter', 'sans-serif']
                     },
                     animation: {
                         'float': 'float 3s ease-in-out infinite',
-                        'pulse-glow': 'pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'spin-slow': 'spin 12s linear infinite'
+                        'pulse-glow': 'pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
                     },
                     keyframes: {
                         float: {
                             '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-8px)' },
+                            '50%': { transform: 'translateY(-6px)' }
                         },
                         'pulse-glow': {
                             '0%, 100%': { opacity: 1, filter: 'brightness(1.2)' },
-                            '50%': { opacity: .6, filter: 'brightness(1.8)' },
+                            '50%': { opacity: .65, filter: 'brightness(1.7)' }
                         }
                     }
                 }
@@ -47,17 +43,17 @@
         }
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <style>
-        :root { 
-            --color-marvel: #e11d48; 
+        :root {
+            --color-marvel: #e11d48;
             --color-glow: rgba(225, 29, 72, 0.3);
-            --bg-color: #030308; 
+            --bg-color: #030308;
         }
-        
-        body { 
-            background-color: var(--bg-color); 
-            background-image: 
+
+        body {
+            background-color: var(--bg-color);
+            background-image:
                 radial-gradient(circle at 20% 20%, rgba(225, 29, 72, 0.12) 0%, transparent 45%),
                 radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.12) 0%, transparent 45%),
                 radial-gradient(circle at 50% 50%, rgba(14, 165, 233, 0.08) 0%, transparent 60%);
@@ -65,39 +61,50 @@
             transition: background 0.8s ease;
         }
 
-        /* Canvas de Fondo y Primer Plano 3D */
-#galaxy-canvas, #foreground-3d-canvas {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw; height: 100vh;
-    pointer-events: none;
-}
-#galaxy-canvas { z-index: -1; }
-#foreground-3d-canvas { 
-    z-index: 45; /* Lo subimos para que pase por delante de casi toda la interfaz */
-    opacity: 0.95; 
-}
+        #galaxy-canvas, #foreground-3d-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+        }
+        #galaxy-canvas { z-index: -2; }
+        #foreground-3d-canvas {
+            z-index: -1;
+            opacity: 0.55;
+        }
 
-        
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
+
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
-        
+
         .tech-tooltip { position: relative; }
         .tech-tooltip:hover::after {
             content: attr(data-tip);
-            position: absolute; bottom: 120%; left: 50%; transform: translateX(-50%);
-            background: rgba(9, 9, 11, 0.95); color: #a1a1aa; font-size: 0.7rem; font-family: 'Rajdhani', sans-serif;
-            text-transform: uppercase; letter-spacing: 1px; padding: 4px 8px; border-radius: 4px;
-            border: 1px solid var(--color-marvel); white-space: nowrap; z-index: 50; pointer-events: none;
+            position: absolute;
+            bottom: 120%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(9, 9, 11, 0.95);
+            color: #d4d4d8;
+            font-size: 0.7rem;
+            font-family: 'Rajdhani', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid var(--color-marvel);
+            white-space: nowrap;
+            z-index: 60;
+            pointer-events: none;
         }
 
-        /* Efecto Cristal e Interfaz Holográfica */
         .glass-panel {
-            background: linear-gradient(135deg, rgba(18,18,24,0.85) 0%, rgba(8,8,12,0.95) 100%);
+            background: linear-gradient(135deg, rgba(16,16,22,0.9) 0%, rgba(8,8,12,0.96) 100%);
             backdrop-filter: blur(16px);
             border-top: 1px solid rgba(255,255,255,0.12);
             border-left: 1px solid rgba(255,255,255,0.06);
@@ -105,12 +112,12 @@
         }
 
         .vault-card {
-            background: rgba(15, 15, 23, 0.7);
+            background: rgba(15, 15, 23, 0.75);
             border: 1px solid rgba(255, 255, 255, 0.08);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .vault-card:hover {
-            transform: translateY(-4px) scale(1.02);
+            transform: translateY(-3px) scale(1.01);
             border-color: rgba(245, 158, 11, 0.5);
             box-shadow: 0 10px 30px rgba(245, 158, 11, 0.15);
         }
@@ -123,159 +130,204 @@
     </style>
 </head>
 <body class="text-zinc-100 min-h-screen font-body antialiased selection:bg-marvel selection:text-white pb-24 overflow-x-hidden">
-    
-    <!-- CANVAS DEL UNIVERSO (FONDO Y PRIMER PLANO 3D) -->
-    <canvas id="galaxy-canvas"></canvas>
-    <canvas id="foreground-3d-canvas"></canvas>
 
-    <div id="toast-container" class="fixed top-20 right-4 z-[100] flex flex-col gap-3 pointer-events-none"></div>
+    <!-- CANVAS DE FONDO -->
+    <canvas id="galaxy-canvas" aria-hidden="true"></canvas>
+    <canvas id="foreground-3d-canvas" aria-hidden="true"></canvas>
 
-    <!-- HEADER PRINCIPAL -->
-    <header class="bg-black/60 backdrop-blur-xl border-b border-white/10 sticky top-0 z-50 transition-colors duration-500">
-        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center gap-4">
-            <div class="flex items-center gap-4">
-                <h1 class="font-display bg-marvel text-white font-black tracking-wider px-3.5 py-1 text-lg rounded shadow-[0_0_15px_var(--color-glow)] uppercase transition-all duration-500">MARVEL</h1>
-                <div id="gem-tracker" class="hidden sm:flex items-center gap-2 bg-zinc-900/60 px-3.5 py-1.5 rounded-full border border-white/10"></div>
-            </div>
-            
-            <div class="flex items-center gap-4 text-xs font-medium text-zinc-400 shrink-0 font-tech">
-                <div class="flex flex-col items-end gap-1">
-                    <div class="flex items-center gap-2">
-                        <i class="fa-solid fa-crosshairs text-marvel transition-colors duration-500"></i>
-                        <span id="progress-stats" class="text-white font-tech font-bold text-base tracking-wide">0/0</span>
+    <!-- NOTIFICACIONES TOAST -->
+    <div id="toast-container" class="fixed top-24 right-4 z-[120] flex flex-col gap-3 pointer-events-none"></div>
+
+    <!-- CONTENEDOR STICKY UNIFICADO -->
+    <div class="sticky top-0 z-40">
+        <!-- HEADER PRINCIPAL -->
+        <header class="bg-black/75 backdrop-blur-xl border-b border-white/10 transition-colors duration-500">
+            <div class="max-w-6xl mx-auto px-4 py-2.5 flex justify-between items-center gap-3">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-3">
+                        <div class="flex items-center gap-2.5">
+                            <h1 class="font-display bg-marvel text-white font-black tracking-wider px-3 py-0.5 text-base sm:text-lg rounded shadow-[0_0_15px_var(--color-glow)] uppercase transition-all duration-500">MARVEL</h1>
+                            <span id="agent-rank-badge" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border text-[10px] font-tech font-bold uppercase tracking-wider text-zinc-400 border-zinc-700 bg-zinc-900/80">Recluta Nivel 1</span>
+                        </div>
+                        <!-- Gemas visibles en móvil -->
+                        <div id="gem-tracker-mobile" class="flex sm:hidden items-center gap-1.5"></div>
                     </div>
-                    <div class="w-24 bg-zinc-800 h-1.5 rounded-full overflow-hidden">
-                        <div id="progress-bar" class="bg-marvel h-full transition-all duration-500" style="width: 0%"></div>
+                    <!-- Gemas en escritorio -->
+                    <div id="gem-tracker" class="hidden sm:flex items-center gap-1.5 bg-zinc-900/60 px-3 py-1 rounded-full border border-white/10"></div>
+                </div>
+
+                <div class="flex items-center gap-3 sm:gap-4 text-xs font-medium text-zinc-400 shrink-0 font-tech">
+                    <div class="flex flex-col items-end gap-1">
+                        <div class="flex items-center gap-1.5">
+                            <i class="fa-solid fa-crosshairs text-marvel transition-colors duration-500"></i>
+                            <span id="progress-stats" class="text-white font-tech font-bold text-sm sm:text-base tracking-wide">0/0</span>
+                        </div>
+                        <div class="w-20 sm:w-24 bg-zinc-800 h-1.5 rounded-full overflow-hidden">
+                            <div id="progress-bar" class="bg-marvel h-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="hidden sm:block w-[1px] h-6 bg-zinc-800"></div>
+
+                    <div class="hidden sm:flex tech-tooltip items-center gap-1.5" data-tip="Tiempo Invertido">
+                        <i class="fa-regular fa-clock text-zinc-500 text-sm"></i>
+                        <span id="time-stats" class="text-white font-tech font-bold text-base tracking-wide">0h 0m</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- BARRA DE NAVEGACIÓN Y FILTROS -->
+        <div class="bg-[#030308]/88 backdrop-blur-md border-b border-white/5 shadow-xl py-2.5 transition-colors duration-500" id="nav-container">
+            <div class="max-w-6xl mx-auto px-4 flex flex-col gap-2.5">
+                <div class="flex items-center justify-between gap-2 overflow-x-auto hide-scrollbar font-tech">
+                    <div class="flex gap-2 snap-x shrink-0">
+                        <button type="button" onclick="App.setSaga('all')" id="tab-saga-all" class="snap-start shrink-0 px-4 py-1 text-xs sm:text-sm font-bold uppercase tracking-wider rounded-full transition-all border border-transparent">Universo Completo</button>
+                        <button type="button" onclick="App.setSaga('Infinito')" id="tab-saga-Infinito" class="snap-start shrink-0 px-4 py-1 text-xs sm:text-sm font-bold uppercase tracking-wider rounded-full transition-all border border-transparent">Saga Infinito</button>
+                        <button type="button" onclick="App.setSaga('Multiverso')" id="tab-saga-Multiverso" class="snap-start shrink-0 px-4 py-1 text-xs sm:text-sm font-bold uppercase tracking-wider rounded-full transition-all border border-transparent">Saga Multiverso</button>
+                    </div>
+
+                    <div class="flex items-center gap-2 shrink-0">
+                        <button type="button" id="btn-spoiler-toggle" onclick="App.toggleSpoilerMode()" class="shrink-0 font-tech font-bold px-3 py-1 text-xs uppercase tracking-wider rounded-lg border transition-all flex items-center gap-1.5 bg-zinc-900/60 border-zinc-800 text-zinc-400 hover:text-white">
+                            <i class="fa-solid fa-eye"></i> Nivel 7
+                        </button>
+                        <div class="flex bg-zinc-900/60 p-0.5 rounded-lg border border-zinc-800">
+                            <button type="button" id="btn-view-grid" onclick="App.setViewMode('grid')" title="Vista Cuadrícula" aria-label="Vista Cuadrícula" class="px-2.5 py-1 rounded text-xs font-bold"><i class="fa-solid fa-grip"></i></button>
+                            <button type="button" id="btn-view-timeline" onclick="App.setViewMode('timeline')" title="Vista Línea Temporal TVA" aria-label="Vista Línea Temporal TVA" class="px-2.5 py-1 rounded text-xs font-bold"><i class="fa-solid fa-timeline"></i></button>
+                        </div>
                     </div>
                 </div>
 
-                <div class="w-[1px] h-6 bg-zinc-800"></div>
-
-                <div class="flex items-center gap-1.5" data-tip="Tiempo Invertido">
-                    <i class="fa-regular fa-clock text-zinc-500 text-sm"></i>
-                    <span id="time-stats" class="text-white font-tech font-bold text-base tracking-wide">0h 0m</span>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <!-- BARRA NAVEGACIÓN Y FILTROS STICKY -->
-    <div class="bg-[#030308]/80 backdrop-blur-md sticky top-[53px] z-40 border-b border-white/5 shadow-xl py-3 transition-colors duration-500" id="nav-container">
-        <div class="max-w-6xl mx-auto px-4 flex flex-col gap-3">
-            
-            <div class="flex overflow-x-auto hide-scrollbar gap-2 snap-x font-tech">
-                <button onclick="App.setSaga('all')" id="tab-saga-all" class="snap-start shrink-0 px-5 py-1 text-sm font-bold uppercase tracking-wider rounded-full transition-all border border-transparent">Universo Completo</button>
-                <button onclick="App.setSaga('Infinito')" id="tab-saga-Infinito" class="snap-start shrink-0 px-5 py-1 text-sm font-bold uppercase tracking-wider rounded-full transition-all border border-transparent">Saga Infinito</button>
-                <button onclick="App.setSaga('Multiverso')" id="tab-saga-Multiverso" class="snap-start shrink-0 px-5 py-1 text-sm font-bold uppercase tracking-wider rounded-full transition-all border border-transparent">Saga Multiverso</button>
-            </div>
-
-            <div class="flex flex-wrap sm:flex-nowrap justify-between items-center gap-3">
-                <div class="relative flex-1 min-w-[200px]">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 text-xs"></i>
-                    <input type="text" id="search-input" oninput="App.setSearchQuery(this.value)" placeholder="Buscar película, fase, personaje..." class="w-full bg-zinc-900/60 backdrop-blur border border-zinc-800 rounded-lg pl-9 pr-3 py-1.5 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-marvel transition-colors">
-                </div>
-
-                <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end font-tech">
-                    <div class="flex items-center bg-zinc-900/60 backdrop-blur border border-zinc-800 rounded-lg px-3 py-1.5 h-8 shrink-0">
-                        <i class="fa-solid fa-arrow-down-a-z text-zinc-500 text-[10px] mr-2"></i>
-                        <select id="sort-select" onchange="App.setSortOrder(this.value)" class="bg-transparent text-zinc-300 text-xs font-semibold focus:outline-none cursor-pointer">
-                            <option value="narrative" class="bg-zinc-900">Orden Cronológico</option>
-                            <option value="release" class="bg-zinc-900">Fecha de Estreno</option>
-                        </select>
+                <div class="flex flex-wrap sm:flex-nowrap justify-between items-center gap-2.5">
+                    <div class="relative flex-1 min-w-[200px]">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 text-xs"></i>
+                        <input type="text" id="search-input" oninput="App.setSearchQuery(this.value)" placeholder="Buscar título, fase, personaje, año, artefacto..." class="w-full bg-zinc-900/60 backdrop-blur border border-zinc-800 rounded-lg pl-9 pr-3 py-1.5 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-marvel transition-colors">
                     </div>
-                    
-                    <div class="flex bg-zinc-900/60 backdrop-blur rounded-lg p-1 border border-zinc-800 shrink-0">
-                        <button onclick="App.setStatus('all')" id="btn-status-all" class="shrink-0 font-bold px-3 py-0.5 text-xs tracking-wide rounded transition-all">Todo</button>
-                        <button onclick="App.setStatus('pending')" id="btn-status-pending" class="shrink-0 font-bold px-3 py-0.5 text-xs tracking-wide rounded transition-all text-zinc-400 hover:text-white">Pendientes</button>
-                        <button onclick="App.setStatus('watched')" id="btn-status-watched" class="shrink-0 font-bold px-3 py-0.5 text-xs tracking-wide rounded transition-all text-zinc-400 hover:text-white">Vistas</button>
+
+                    <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end font-tech">
+                        <div class="flex items-center bg-zinc-900/60 backdrop-blur border border-zinc-800 rounded-lg px-3 py-1.5 h-8 shrink-0">
+                            <i class="fa-solid fa-arrow-down-a-z text-zinc-500 text-[10px] mr-2"></i>
+                            <select id="sort-select" aria-label="Ordenar expedientes" onchange="App.setSortOrder(this.value)" class="bg-transparent text-zinc-300 text-xs font-semibold focus:outline-none cursor-pointer">
+                                <option value="narrative" class="bg-zinc-900">Orden Cronológico</option>
+                                <option value="release" class="bg-zinc-900">Fecha de Estreno</option>
+                            </select>
+                        </div>
+
+                        <div class="flex bg-zinc-900/60 backdrop-blur rounded-lg p-1 border border-zinc-800 shrink-0">
+                            <button type="button" onclick="App.setStatus('all')" id="btn-status-all" class="shrink-0 font-bold px-3 py-0.5 text-xs tracking-wide rounded transition-all">Todo</button>
+                            <button type="button" onclick="App.setStatus('pending')" id="btn-status-pending" class="shrink-0 font-bold px-3 py-0.5 text-xs tracking-wide rounded transition-all text-zinc-400 hover:text-white">Pendientes</button>
+                            <button type="button" onclick="App.setStatus('watched')" id="btn-status-watched" class="shrink-0 font-bold px-3 py-0.5 text-xs tracking-wide rounded transition-all text-zinc-400 hover:text-white">Vistas</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- RECIPIENTE PRINCIPAL -->
-    <main class="max-w-6xl mx-auto px-4 py-6 relative z-30">
-        <section id="movies-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></section>
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="max-w-6xl mx-auto px-4 py-6 relative z-10 space-y-6">
+        <!-- BANNER SIGUIENTE MISIÓN + CALCULADORA DE MARATÓN -->
+        <section id="next-mission-banner"></section>
+
+        <!-- GRILLA / LÍNEA TEMPORAL CON DIVISORES DE ARCO -->
+        <section id="movies-container"></section>
     </main>
 
-    <!-- BÓVEDA FLOTANTE -->
-    <button onclick="App.toggleInventory()" data-tip="Bóveda Multiversal" class="tech-tooltip fixed bottom-6 right-6 z-50 bg-gradient-to-tr from-amber-600 via-amber-500 to-yellow-300 text-black w-14 h-14 rounded-full shadow-[0_0_30px_rgba(245,158,11,0.5)] flex items-center justify-center text-xl transition-all hover:scale-110 active:scale-95 border-2 border-amber-200 group">
+    <!-- BOTÓN FLOTANTE BÓVEDA -->
+    <button type="button" onclick="App.toggleInventory()" data-tip="Bóveda Multiversal" aria-label="Abrir Bóveda Multiversal" class="tech-tooltip fixed bottom-6 right-6 z-50 bg-gradient-to-tr from-amber-600 via-amber-500 to-yellow-300 text-black w-14 h-14 rounded-full shadow-[0_0_30px_rgba(245,158,11,0.5)] flex items-center justify-center text-xl transition-all hover:scale-110 active:scale-95 border-2 border-amber-200 group">
         <i class="fa-solid fa-vault group-hover:rotate-45 transition-transform duration-500"></i>
     </button>
 
-    <!-- MODAL REDISEÑADO DE LA BÓVEDA MULTIVERSAL -->
-    <div id="inventory-modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-2xl z-[100] flex items-center justify-center p-3 sm:p-6 transition-all duration-300">
+    <!-- DRAWER LATERAL (ESCRITORIO) / BOTTOM SHEET (MÓVIL) -->
+    <div id="detail-drawer-overlay" role="dialog" aria-modal="true" onclick="if (event.target === this) App.closeDrawer()" class="hidden fixed inset-0 bg-black/75 backdrop-blur-sm z-[90] flex items-end sm:items-stretch sm:justify-end">
+        <aside id="detail-drawer-panel" class="glass-panel w-full sm:max-w-xl max-h-[92vh] sm:max-h-none sm:h-full rounded-t-2xl sm:rounded-none border-t sm:border-t-0 sm:border-l border-white/15 flex flex-col overflow-hidden transform translate-y-full sm:translate-y-0 sm:translate-x-full transition-transform duration-300">
+            <div id="drawer-content" class="flex flex-col h-full overflow-hidden"></div>
+        </aside>
+    </div>
+
+    <!-- MODAL DE LA BÓVEDA MULTIVERSAL -->
+    <div id="inventory-modal" role="dialog" aria-modal="true" aria-labelledby="vault-modal-title" onclick="if (event.target === this) App.toggleInventory(true)" class="hidden fixed inset-0 bg-black/85 backdrop-blur-2xl z-[100] flex items-center justify-center p-3 sm:p-6">
         <div class="glass-panel rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl border border-amber-500/30 overflow-hidden relative">
-            
-            <!-- Encabezado HUD High-Tech -->
-            <div class="p-5 border-b border-zinc-800 flex flex-wrap justify-between items-center bg-gradient-to-r from-amber-950/30 via-zinc-900/80 to-zinc-900/30 shrink-0 gap-3">
+
+            <!-- Encabezado Bóveda -->
+            <div class="p-4 sm:p-5 border-b border-zinc-800 flex flex-wrap justify-between items-center bg-gradient-to-r from-amber-950/30 via-zinc-900/80 to-zinc-900/30 shrink-0 gap-3">
                 <div>
                     <div class="flex items-center gap-2">
                         <span class="inline-block w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
                         <p class="font-tech text-[10px] text-amber-500 font-bold uppercase tracking-widest">Acceso de Nivel Observador</p>
                     </div>
-                    <h2 class="font-display text-xl sm:text-2xl font-black text-white uppercase tracking-wider flex items-center gap-2 mt-0.5">
+                    <h2 id="vault-modal-title" class="font-display text-lg sm:text-2xl font-black text-white uppercase tracking-wider flex items-center gap-2 mt-0.5">
                         <i class="fa-solid fa-vault text-amber-500"></i> Bóveda Multiversal
                     </h2>
                 </div>
 
-                <!-- Botones Navegación Interna de la Bóveda -->
                 <div class="flex bg-zinc-950/80 p-1 rounded-xl border border-zinc-800 font-tech">
-                    <button onclick="App.setVaultTab('artifacts')" id="vault-tab-artifacts" class="px-3.5 py-1 rounded-lg text-xs font-bold uppercase transition-all bg-amber-500 text-black shadow-md">
-                        <i class="fa-solid fa-gem mr-1.5"></i> Artefactos
+                    <button type="button" onclick="App.setVaultTab('artifacts')" id="vault-tab-artifacts" class="px-3 py-1 rounded-lg text-xs font-bold uppercase transition-all bg-amber-500 text-black shadow-md">
+                        <i class="fa-solid fa-gem mr-1"></i> Artefactos
                     </button>
-                    <button onclick="App.setVaultTab('achievements')" id="vault-tab-achievements" class="px-3.5 py-1 rounded-lg text-xs font-bold uppercase transition-all text-zinc-400 hover:text-white">
-                        <i class="fa-solid fa-trophy mr-1.5"></i> Logros
+                    <button type="button" onclick="App.setVaultTab('achievements')" id="vault-tab-achievements" class="px-3 py-1 rounded-lg text-xs font-bold uppercase transition-all text-zinc-400 hover:text-white">
+                        <i class="fa-solid fa-trophy mr-1"></i> Logros
+                    </button>
+                    <button type="button" onclick="App.setVaultTab('stats')" id="vault-tab-stats" class="px-3 py-1 rounded-lg text-xs font-bold uppercase transition-all text-zinc-400 hover:text-white">
+                        <i class="fa-solid fa-chart-simple mr-1"></i> Estadísticas
                     </button>
                 </div>
 
-                <button onclick="App.toggleInventory()" class="text-zinc-500 hover:text-white text-2xl transition-colors shrink-0 ml-auto sm:ml-0"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" onclick="App.toggleInventory(true)" aria-label="Cerrar Bóveda" class="text-zinc-500 hover:text-white text-2xl transition-colors shrink-0 ml-auto sm:ml-0"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            
-            <!-- Contenido de la Bóveda -->
-            <div class="p-5 sm:p-6 overflow-y-auto hide-scrollbar space-y-8 flex-1">
-                
+
+            <!-- Contenido Bóveda -->
+            <div class="p-4 sm:p-6 overflow-y-auto hide-scrollbar space-y-6 flex-1">
+
                 <!-- ALTAR DE GEMAS DEL INFINITO -->
-                <div class="bg-gradient-to-b from-zinc-900/90 to-zinc-950/90 p-5 rounded-2xl border border-zinc-800 shadow-inner relative overflow-hidden">
-                    <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-amber-500/5 rounded-full blur-3xl pointer-events-none"></div>
-                    
+                <div class="bg-gradient-to-b from-zinc-900/90 to-zinc-950/90 p-4 sm:p-5 rounded-2xl border border-zinc-800 shadow-inner relative overflow-hidden">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="font-tech text-xs font-bold text-amber-400 uppercase tracking-widest flex items-center gap-2">
                             <i class="fa-solid fa-cubes text-amber-500"></i> Pedestal de Singularidades Cósmicas
                         </h3>
                         <span id="gem-count-badge" class="font-tech text-[11px] font-bold text-zinc-400 bg-zinc-800 px-2.5 py-0.5 rounded-full border border-zinc-700">0 / 6 Reunidas</span>
                     </div>
-
                     <div id="vault-gems-container" class="grid grid-cols-3 sm:grid-cols-6 gap-3"></div>
                 </div>
 
-                <!-- SECCIÓN DINÁMICA: ARTEFACTOS -->
+                <!-- SECCIÓN 1: ARTEFACTOS -->
                 <div id="vault-section-artifacts">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="font-tech text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
-                            <i class="fa-solid fa-box-archive text-amber-500"></i> Objetos de Poder Extraídos
-                        </h3>
-                    </div>
+                    <h3 class="font-tech text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2 mb-4">
+                        <i class="fa-solid fa-box-archive text-amber-500"></i> Objetos de Poder Extraídos
+                    </h3>
                     <div id="inventory-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
                 </div>
 
-                <!-- SECCIÓN DINÁMICA: LOGROS -->
+                <!-- SECCIÓN 2: LOGROS -->
                 <div id="vault-section-achievements" class="hidden">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="font-tech text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
-                            <i class="fa-solid fa-award text-amber-500"></i> Hitos del Espacio-Tiempo
-                        </h3>
-                    </div>
+                    <h3 class="font-tech text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2 mb-4">
+                        <i class="fa-solid fa-award text-amber-500"></i> Hitos del Espacio-Tiempo
+                    </h3>
                     <div id="achievements-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                </div>
+
+                <!-- SECCIÓN 3: ESTADÍSTICAS Y TMDB -->
+                <div id="vault-section-stats" class="hidden space-y-4">
+                    <h3 class="font-tech text-xs font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
+                        <i class="fa-solid fa-chart-line text-amber-500"></i> Analítica de Misión y Pósters
+                    </h3>
+                    <div id="vault-stats-content" class="space-y-4"></div>
                 </div>
 
             </div>
 
-            <!-- Footer Informativo Vault -->
-            <div class="p-3 bg-zinc-950/80 border-t border-zinc-800/80 px-6 flex justify-between items-center text-[10px] font-tech text-zinc-500">
-                <span>ESTADO BÓVEDA: EN LÍNEA</span>
-                <span class="text-amber-500/80">S.H.I.E.L.D. SECURE STORAGE SYSTEM</span>
+            <!-- Footer Respaldo JSON -->
+            <div class="p-3 bg-zinc-950/85 border-t border-zinc-800/80 px-5 sm:px-6 flex flex-wrap justify-between items-center gap-3 text-[10px] font-tech text-zinc-500">
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="App.exportData()" class="px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-700 font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5">
+                        <i class="fa-solid fa-download text-amber-400"></i> Exportar JSON
+                    </button>
+                    <button type="button" onclick="App.triggerImport()" class="px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-zinc-700 font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5">
+                        <i class="fa-solid fa-upload text-cyan-400"></i> Importar JSON
+                    </button>
+                    <input type="file" id="import-file-input" accept="application/json,.json" class="hidden" onchange="App.importData(event)">
+                </div>
+                <span class="text-amber-500/80 tracking-wider">S.H.I.E.L.D. SECURE STORAGE SYSTEM</span>
             </div>
         </div>
     </div>
